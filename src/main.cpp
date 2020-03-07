@@ -23,7 +23,8 @@ using namespace choreograph;
 
 #define HIGH_HAT    59
 #define SNARE       38
-#define BASS_DRUM   41
+#define BASS_DRUM   36
+ 
 #define ONEMEASURE 480
 #define QUARTER   120        /* ticks per quarter note */
 #define EIGHTH 60
@@ -34,6 +35,7 @@ using namespace choreograph;
 typedef std::function<float (float)> EaseFn;
  
 /* ---trackにnote eventを追加する物--- */
+
 void add_periodic(MidiFile& midifile,
                   int track_num,
                   int note = HIGH_HAT,
@@ -42,8 +44,7 @@ void add_periodic(MidiFile& midifile,
                   int div = 8,
                   int duration_in_ticks = ONEMEASURE){
     for(int i=0; i<div ;i++){
-        
-        float step = 1.0 / div * i;
+        float step = i / static_cast<float>(div);
         int action_time = ease_fn(step) * duration_in_ticks;
         vector<uchar> midievent;
         midievent.resize(3);
@@ -58,6 +59,51 @@ void add_periodic(MidiFile& midifile,
     }
 }
 
+// tidalcycleぽい感じで o + x -を使ってパターンを作る
+void add_pattern(MidiFile& midifile,
+                 int track_num,
+                 vector<string>beat_pattern,// {o,+, -,x,o,x,o}とか
+                vector<int>notes, // this should be three
+                int velocity,
+                const EaseFn &ease_fn = &easeNone,
+                int duration_in_ticks = ONEMEASURE
+                        ){
+    vector<uchar> midievent;
+    midievent.resize(3);
+
+    int div = beat_pattern.size() ;
+    
+    for(int i=0; i<div; i++){
+        float step = i / static_cast<float>(div);
+        int action_time = ease_fn(step) * duration_in_ticks;
+        if(beat_pattern[i] == "-"){
+            continue;
+        }
+
+        int note;
+        if(beat_pattern[i] == "o"){
+            note = notes[0];
+        }
+        else if(beat_pattern[i] == "x"){
+            note = notes[1];
+        }
+        else if(beat_pattern[i] == "+"){
+            note = notes[2];
+        }
+        else{
+            note = notes[0];
+        }
+        cout << action_time << " " << step << " "<< div <<" " << note << " " << velocity<<endl;
+        midievent[0] = NOTE_ON;
+        midievent[1] = note;
+        midievent[2] = velocity;
+        midifile.addEvent(track_num, action_time, midievent);
+        action_time += step;
+        midievent[0] = NOTE_OFF;
+        midievent[1] = note;
+        midifile.addEvent(track_num, action_time, midievent);
+    }
+}
 
 //trackにnote eventをランダムに追加
 void add_notes(MidiFile& midifile,
@@ -85,17 +131,25 @@ int main(int argc, char** argv) {
    MidiFile outputfile;        // create an empty MIDI file with one track
 //       outputfile.absoluteTicks(); // time information stored as absolute time
 //       outputfile.setTicksPerQuarterNote(QUARTER);
-   int track = outputfile.addTrack();
+        int track = outputfile.addTrack();
     int velocity = 127;
     
-    add_periodic(outputfile,
-                 track,
-                 SNARE,
-                 127,
-                 easeInOutQuad,
-                 16*32,
-                 ONEMEASURE * 16);
+//    add_periodic(outputfile,
+//                 track,
+//                 SNARE,
+//                 velocity,
+//                 easeInOutQuad,
+//                 32,
+//                 ONEMEASURE );
 
+//    track = outputfile.addTrack();
+    add_pattern(outputfile,
+                        track,
+                        {"o",  "o", "x", "o", "-", "o", "-", "o"},
+                        {BASS_DRUM, SNARE, HIGH_HAT},
+                        127,
+                        easeOutQuad,
+                       ONEMEASURE);
    outputfile.sortTracks();         // make sure data is in correct order
 
     // change path if you need
