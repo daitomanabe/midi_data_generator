@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A2048CC24135E930053DC6A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A2047F624135E920053DC6A /* main.cpp */; };
-		0A20492924135EFA0053DC6A /* libmidifile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A20492724135EFA0053DC6A /* libmidifile.a */; };
+		95A3A04B2413989F00F599C3 /* libmidifile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A3A0492413989F00F599C3 /* libmidifile.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,16 +26,14 @@
 /* Begin PBXFileReference section */
 		0A2047F624135E920053DC6A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0A2048A824135E930053DC6A /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
-		0A20491F24135EFA0053DC6A /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
-		0A20492024135EFA0053DC6A /* MidiFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiFile.h; sourceTree = "<group>"; };
-		0A20492124135EFA0053DC6A /* MidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventList.h; sourceTree = "<group>"; };
-		0A20492224135EFA0053DC6A /* Binasc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Binasc.h; sourceTree = "<group>"; };
-		0A20492324135EFA0053DC6A /* Options.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
-		0A20492424135EFA0053DC6A /* MidiMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiMessage.h; sourceTree = "<group>"; };
-		0A20492524135EFA0053DC6A /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		0A20492724135EFA0053DC6A /* libmidifile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmidifile.a; sourceTree = "<group>"; };
-		0A20492824135EFA0053DC6A /* .travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .travis.yml; sourceTree = "<group>"; };
 		0A20492A24135EFA0053DC6A /* midi_data_generator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = midi_data_generator; sourceTree = BUILT_PRODUCTS_DIR; };
+		95A3A0412413989F00F599C3 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
+		95A3A0422413989F00F599C3 /* MidiFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiFile.h; sourceTree = "<group>"; };
+		95A3A0432413989F00F599C3 /* MidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventList.h; sourceTree = "<group>"; };
+		95A3A0442413989F00F599C3 /* Binasc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Binasc.h; sourceTree = "<group>"; };
+		95A3A0452413989F00F599C3 /* Options.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
+		95A3A0462413989F00F599C3 /* MidiMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiMessage.h; sourceTree = "<group>"; };
+		95A3A0492413989F00F599C3 /* libmidifile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmidifile.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,7 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A20492924135EFA0053DC6A /* libmidifile.a in Frameworks */,
+				95A3A04B2413989F00F599C3 /* libmidifile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +68,7 @@
 		0A2047F724135E920053DC6A /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				0A20491D24135EFA0053DC6A /* midifile */,
+				95A3A03F2413989F00F599C3 /* midifile */,
 				0A20484524135E920053DC6A /* Choreograph */,
 			);
 			path = libs;
@@ -100,34 +98,32 @@
 			path = choreograph;
 			sourceTree = "<group>";
 		};
-		0A20491D24135EFA0053DC6A /* midifile */ = {
+		95A3A03F2413989F00F599C3 /* midifile */ = {
 			isa = PBXGroup;
 			children = (
-				0A20491E24135EFA0053DC6A /* include */,
-				0A20492524135EFA0053DC6A /* .gitignore */,
-				0A20492624135EFA0053DC6A /* lib */,
-				0A20492824135EFA0053DC6A /* .travis.yml */,
+				95A3A0402413989F00F599C3 /* include */,
+				95A3A0482413989F00F599C3 /* lib */,
 			);
 			path = midifile;
 			sourceTree = "<group>";
 		};
-		0A20491E24135EFA0053DC6A /* include */ = {
+		95A3A0402413989F00F599C3 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				0A20491F24135EFA0053DC6A /* MidiEvent.h */,
-				0A20492024135EFA0053DC6A /* MidiFile.h */,
-				0A20492124135EFA0053DC6A /* MidiEventList.h */,
-				0A20492224135EFA0053DC6A /* Binasc.h */,
-				0A20492324135EFA0053DC6A /* Options.h */,
-				0A20492424135EFA0053DC6A /* MidiMessage.h */,
+				95A3A0412413989F00F599C3 /* MidiEvent.h */,
+				95A3A0422413989F00F599C3 /* MidiFile.h */,
+				95A3A0432413989F00F599C3 /* MidiEventList.h */,
+				95A3A0442413989F00F599C3 /* Binasc.h */,
+				95A3A0452413989F00F599C3 /* Options.h */,
+				95A3A0462413989F00F599C3 /* MidiMessage.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
 		};
-		0A20492624135EFA0053DC6A /* lib */ = {
+		95A3A0482413989F00F599C3 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				0A20492724135EFA0053DC6A /* libmidifile.a */,
+				95A3A0492413989F00F599C3 /* libmidifile.a */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -317,9 +313,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A3AM28K6KJ;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				HEADER_SEARCH_PATHS = "(Rhizomatiks)/cell/midi_data_generator/Choreograph/**";
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/libs/Choreograph/**",
+					"${SRCROOT}/libs/midifile/include",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/midi_data_generator/midifile/lib",
@@ -333,9 +332,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A3AM28K6KJ;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				HEADER_SEARCH_PATHS = "(Rhizomatiks)/cell/midi_data_generator/Choreograph/**";
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/libs/Choreograph/**",
+					"${SRCROOT}/libs/midifile/include",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/midi_data_generator/midifile/lib",
