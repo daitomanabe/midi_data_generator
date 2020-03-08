@@ -120,8 +120,19 @@ void add_notes(MidiFile& midifile,
                 float repeat_decrease_interval = 10// in ticks リピートのたびにリピートの感覚が短くなる
                 );
 
+void addPitchBendTest(MidiFile& midifile){
+    
+}
 
-
+//pitch bend , ctrl 用
+//tri,sin,cos,noise,
+//周波数はtick単位
+namespace oscillator{
+    inline float cycle(float t, float freq);
+    float train(float t, float freq);
+    inline float tri(float t, float freq);
+    inline float phase(float t, float freq);
+};
 
 /*--- midiファイルを読み込んでエフェクトをかけるようなもの---*/
 // repetitive : Ableton Liveのbeat repeaterの様な物
@@ -134,22 +145,30 @@ int main(int argc, char** argv) {
         int track = outputfile.addTrack();
     int velocity = 127;
     
-//    add_periodic(outputfile,
-//                 track,
-//                 SNARE,
-//                 velocity,
-//                 easeInOutQuad,
-//                 32,
-//                 ONEMEASURE );
+    add_periodic(outputfile,
+                 track,
+                 HIGH_HAT,
+                 velocity,
+                 easeInOutCirc,
+                 16,
+                 ONEMEASURE * 2 );
 
 //    track = outputfile.addTrack();
-    add_pattern(outputfile,
-                        track,
-                        {"o",  "o", "x", "o", "-", "o", "-", "o"},
-                        {BASS_DRUM, SNARE, HIGH_HAT},
-                        127,
-                        easeOutQuad,
-                       ONEMEASURE);
+//    add_pattern(outputfile,
+//                        track,
+//                        {"o",  "o", "x", "o", "-", "o", "-", "o"},
+//                        {BASS_DRUM, SNARE, HIGH_HAT},
+//                        127,
+//                        easeInOutQuad,
+//                       ONEMEASURE * 2);
+    
+//   add_pattern(outputfile,
+//                       track,
+//                       {"+",  "-", "+", "-", "-", "+", "-", "+"},
+//                       {BASS_DRUM, SNARE, HIGH_HAT},
+//                       127,
+//                       easeInOutQuad,
+//                      ONEMEASURE * 2);
    outputfile.sortTracks();         // make sure data is in correct order
 
     // change path if you need
