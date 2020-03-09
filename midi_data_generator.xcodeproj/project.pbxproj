@@ -27,6 +27,7 @@
 		0A2047F624135E920053DC6A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0A2048A824135E930053DC6A /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
 		0A20492A24135EFA0053DC6A /* midi_data_generator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = midi_data_generator; sourceTree = BUILT_PRODUCTS_DIR; };
+		0ABF5A312416070600CC22B1 /* MathConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathConstants.h; sourceTree = "<group>"; };
 		95A3A0412413989F00F599C3 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
 		95A3A0422413989F00F599C3 /* MidiFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiFile.h; sourceTree = "<group>"; };
 		95A3A0432413989F00F599C3 /* MidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventList.h; sourceTree = "<group>"; };
@@ -61,6 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				0A2047F624135E920053DC6A /* main.cpp */,
+				0ABF5A312416070600CC22B1 /* MathConstants.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -319,11 +321,7 @@
 					"${SRCROOT}/libs/Choreograph/**",
 					"${SRCROOT}/libs/midifile/include",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/midi_data_generator/midifile/lib",
-					"$(PROJECT_DIR)/libs/midifile/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs/midifile/lib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -338,11 +336,7 @@
 					"${SRCROOT}/libs/Choreograph/**",
 					"${SRCROOT}/libs/midifile/include",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/midi_data_generator/midifile/lib",
-					"$(PROJECT_DIR)/libs/midifile/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs/midifile/lib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

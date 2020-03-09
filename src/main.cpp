@@ -9,6 +9,8 @@
 #include "MidiFile.h"
 #include "Easing.h"
 #include <unistd.h>
+#include "MathConstants.h"
+
 using namespace std;
 using namespace smf;
 using namespace choreograph;
@@ -37,31 +39,31 @@ typedef std::function<float (float)> EaseFn;
 /* ---trackにnote eventを追加する物--- */
 
 void add_periodic(MidiFile& midifile,
-                  int track_num,
+                  int track_id,
                   int note = HIGH_HAT,
                   int velocity = 127,
                   const EaseFn &ease_fn = &easeNone,
                   int div = 8,
                   int duration_in_ticks = ONEMEASURE){
     for(int i=0; i<div ;i++){
-        float step = i / static_cast<float>(div);
-        int action_time = ease_fn(step) * duration_in_ticks;
+        float current_pos_norm = i / static_cast<float>(div);
+        int action_time = ease_fn(current_pos_norm) * duration_in_ticks;
         vector<uchar> midievent;
         midievent.resize(3);
         midievent[0] = NOTE_ON;
         midievent[1] = note;
         midievent[2] = velocity;
-        midifile.addEvent(track_num, action_time, midievent);
-        action_time += step;
+        midifile.addEvent(track_id, action_time, midievent);
+        action_time += current_pos_norm * duration_in_ticks - 1;
         midievent[0] = NOTE_OFF;
         midievent[1] = note;
-        midifile.addEvent(track_num, action_time, midievent);
+        midifile.addEvent(track_id, action_time, midievent);
     }
 }
 
 // tidalcycleぽい感じで o + x -を使ってパターンを作る
 void add_pattern(MidiFile& midifile,
-                 int track_num,
+                 int track_id,
                  vector<string>beat_pattern,// {o,+, -,x,o,x,o}とか
                 vector<int>notes, // this should be three
                 int velocity,
@@ -74,8 +76,8 @@ void add_pattern(MidiFile& midifile,
     int div = beat_pattern.size() ;
     
     for(int i=0; i<div; i++){
-        float step = i / static_cast<float>(div);
-        int action_time = ease_fn(step) * duration_in_ticks;
+        float current_pos_norm = i / static_cast<float>(div);
+        int action_time = ease_fn(current_pos_norm) * duration_in_ticks;
         if(beat_pattern[i] == "-"){
             continue;
         }
@@ -93,15 +95,14 @@ void add_pattern(MidiFile& midifile,
         else{
             note = notes[0];
         }
-        cout << action_time << " " << step << " "<< div <<" " << note << " " << velocity<<endl;
         midievent[0] = NOTE_ON;
         midievent[1] = note;
         midievent[2] = velocity;
-        midifile.addEvent(track_num, action_time, midievent);
-        action_time += step;
+        midifile.addEvent(track_id, action_time, midievent);
+        action_time += current_pos_norm * duration_in_ticks - 1;
         midievent[0] = NOTE_OFF;
         midievent[1] = note;
-        midifile.addEvent(track_num, action_time, midievent);
+        midifile.addEvent(track_id, action_time, midievent);
     }
 }
 
@@ -120,21 +121,67 @@ void add_notes(MidiFile& midifile,
                 float repeat_decrease_interval = 10// in ticks リピートのたびにリピートの感覚が短くなる
                 );
 
-void addPitchBendTest(MidiFile& midifile){
-    
+
+void addPitchBendTest(MidiFile& midifile,
+int track_id,
+int ctrl_ch = 1,
+int velocity = 127,
+const EaseFn &ease_fn = &easeNone,
+int div = 8,
+int duration_in_ticks = ONEMEASURE)
+{
+
 }
 
 //pitch bend , ctrl 用
 //tri,sin,cos,noise,
 //周波数はtick単位
 namespace oscillator{
-    inline float cycle(float t, float freq);
+inline float cycle(float t, float freq, float phase){
+    return (sin(TWO_PI * t * freq + phase) + 1.) * 0.5;
+}
     float train(float t, float freq);
     inline float tri(float t, float freq);
     inline float phase(float t, float freq);
 };
 
-/*--- midiファイルを読み込んでエフェクトをかけるようなもの---*/
+typedef std::function<float (float, float , float)> OscFn;
+
+
+inline void add_ctrl_event(MidiFile& midifile, int track_id,
+                           int channel,
+                           int val,
+                           int action_time){
+    int ctrl_change = 0xB0;
+    vector<uchar> midievent;
+    midievent.resize(3);
+    midievent[0] = ctrl_change;
+    midievent[1] = channel;
+    midievent[2] = val;
+    midifile.addEvent(track_id, action_time, midievent);
+}
+
+inline void add_ctrl_events(MidiFile& midifile,
+                            int track_id,
+                            int channel,
+                            float min_val,
+                            float max_val,
+                            EaseFn fn,
+                            int duration_in_ticks = ONEMEASURE,
+                            float resolution_in_ticks = 5
+                            )
+{
+    int div = duration_in_ticks / resolution_in_ticks;
+    int action_time = 0;
+    
+    for(int i=0; i<div; i++){
+        float current_pos_norm = i / static_cast<float>(div);
+        uchar val = static_cast<uchar>(fn(current_pos_norm) * 128);
+        add_ctrl_event(midifile, track_id, channel, val, action_time);
+        action_time += resolution_in_ticks;
+    }
+}
+    /*--- midiファイルを読み込んでエフェクトをかけるようなもの---*/
 // repetitive : Ableton Liveのbeat repeaterの様な物
 // stutter   Izotopeのstutterの様な物
 
@@ -142,16 +189,29 @@ int main(int argc, char** argv) {
    MidiFile outputfile;        // create an empty MIDI file with one track
 //       outputfile.absoluteTicks(); // time information stored as absolute time
 //       outputfile.setTicksPerQuarterNote(QUARTER);
-        int track = outputfile.addTrack();
+    int track = outputfile.addTrack();
     int velocity = 127;
+
+    std::function<float(float)> cycle_4x7hz = [](float t)->float{return
+        oscillator::cycle(t, 4., 0.) * oscillator::cycle(t, 7., 0.);};
+
+    add_ctrl_events(outputfile,
+                    track,
+                    1,
+                    0.,
+                    1.,
+                    cycle_4x7hz,
+                    ONEMEASURE*10,
+                    1);
+
     
-    add_periodic(outputfile,
-                 track,
-                 HIGH_HAT,
-                 velocity,
-                 easeInOutCirc,
-                 16,
-                 ONEMEASURE * 2 );
+//    add_periodic(outputfile,
+//                 track,
+//                 HIGH_HAT,
+//                 velocity,
+//                 easeInOutCirc,
+//                 16,
+//                 ONEMEASURE * 2 );
 
 //    track = outputfile.addTrack();
 //    add_pattern(outputfile,
@@ -175,7 +235,6 @@ int main(int argc, char** argv) {
     const char *homeDir = getenv("HOME");
     string output_path = string(homeDir) + "/development/export/test.mid";
     outputfile.write(output_path);
-
    return 0;
 }
 
