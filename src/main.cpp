@@ -138,11 +138,16 @@ int duration_in_ticks = ONEMEASURE)
 //周波数はtick単位
 namespace oscillator{
 inline float cycle(float t, float freq, float phase){
-    return (sin(TWO_PI * t * freq + phase) + 1.) * 0.5;
+    // add 0.5 to time for starting from zero value.
+    return (cos(TWO_PI * (t + 0.5)* freq + phase) + 1.) * 0.5;
 }
-    float train(float t, float freq);
+//train~
+inline float train(float t, float freq, float duty_ratio, float phase){
+    float val = 0.;
+    return val;
+}
     inline float tri(float t, float freq);
-    inline float phase(float t, float freq);
+    inline float phasor(float t, float freq);
 };
 
 typedef std::function<float (float, float , float)> OscFn;
