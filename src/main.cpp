@@ -54,10 +54,11 @@ void add_periodic(MidiFile& midifile,
         midievent[1] = note;
         midievent[2] = velocity;
         midifile.addEvent(track_id, action_time, midievent);
-        action_time += current_pos_norm * duration_in_ticks - 1;
+        action_time += current_pos_norm * duration_in_ticks;
         midievent[0] = NOTE_OFF;
         midievent[1] = note;
         midifile.addEvent(track_id, action_time, midievent);
+        cout << track_id << " "<< action_time << " "  << endl;
     }
 }
 
@@ -171,7 +172,7 @@ inline void add_ctrl_events(MidiFile& midifile,
                             int channel,
                             float min_val,
                             float max_val,
-                            EaseFn fn,
+                            const EaseFn & fn,
                             int duration_in_ticks = ONEMEASURE,
                             float resolution_in_ticks = 5
                             )
@@ -186,6 +187,26 @@ inline void add_ctrl_events(MidiFile& midifile,
         action_time += resolution_in_ticks;
     }
 }
+
+
+typedef std::function<bool (float)> CondFn;// conditional function
+
+inline void add_notes_with_condition(MidiFile& midifile,
+                                     int track_id,
+                                     vector<int> random_note,
+                                     vector<int> random_velocity,
+                                     EaseFn fn,
+                                     CondFn cn,
+                                     int duration_in_ticks = ONEMEASURE)
+{
+    for(int i=0;i<duration_in_ticks;i++){
+        float current_pos_norm = i / static_cast<float>(duration_in_ticks);
+        float t = fn(current_pos_norm);
+        if(cn(t)){
+            
+        }
+    }
+}
     /*--- midiファイルを読み込んでエフェクトをかけるようなもの---*/
 // repetitive : Ableton Liveのbeat repeaterの様な物
 // stutter   Izotopeのstutterの様な物
@@ -197,26 +218,29 @@ int main(int argc, char** argv) {
     int track = outputfile.addTrack();
     int velocity = 127;
 
-    std::function<float(float)> cycle_4x7hz = [](float t)->float{return
-        oscillator::cycle(t, 4., 0.) * oscillator::cycle(t, 7., 0.);};
+    //control value
+    if(false){
+        std::function<float(float)> cycle_4x7hz = [](float t)->float{return
+            oscillator::cycle(t, 4., 0.) * oscillator::cycle(t, 7., 0.);};
 
-    add_ctrl_events(outputfile,
-                    track,
-                    1,
-                    0.,
-                    1.,
-                    cycle_4x7hz,
-                    ONEMEASURE*10,
-                    1);
+        add_ctrl_events(outputfile,
+                        track,
+                        1,
+                        0.,
+                        1.,
+                        cycle_4x7hz,
+                        ONEMEASURE*10,
+                        1);
+    }
 
     
-//    add_periodic(outputfile,
-//                 track,
-//                 HIGH_HAT,
-//                 velocity,
-//                 easeInOutCirc,
-//                 16,
-//                 ONEMEASURE * 2 );
+    add_periodic(outputfile,
+                 track,
+                 HIGH_HAT,
+                 velocity,
+                 easeInOutCirc,
+                 16,
+                 ONEMEASURE * 2 );
 
 //    track = outputfile.addTrack();
 //    add_pattern(outputfile,
