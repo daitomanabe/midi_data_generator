@@ -6,6 +6,7 @@
 //
 
 #include <iostream>
+#include <random>
 #include "MidiFile.h"
 #include "Easing.h"
 #include <unistd.h>
@@ -37,6 +38,23 @@ using namespace choreograph;
 typedef std::function<float (float)> EaseFn;
  
 /* ---trackにnote eventを追加する物--- */
+inline void add_note_event(MidiFile& midifile,
+                           int track_id,
+                           int note,
+                           int velocity,
+                           int duration,
+                           int action_time){
+    vector<uchar> midievent;
+    midievent.resize(3);
+    midievent[0] = NOTE_ON;
+    midievent[1] = note;
+    midievent[2] = velocity;
+    midifile.addEvent(track_id, action_time, midievent);
+    action_time += duration;
+    midievent[0] = NOTE_OFF;
+    midievent[1] = note;
+    midifile.addEvent(track_id, action_time, midievent);
+}
 
 void add_periodic(MidiFile& midifile,
                   int track_id,
@@ -58,7 +76,6 @@ void add_periodic(MidiFile& midifile,
         midievent[0] = NOTE_OFF;
         midievent[1] = note;
         midifile.addEvent(track_id, action_time, midievent);
-        cout << track_id << " "<< action_time << " "  << endl;
     }
 }
 
@@ -140,7 +157,7 @@ int duration_in_ticks = ONEMEASURE)
 namespace oscillator{
 inline float cycle(float t, float freq, float phase){
     // add 0.5 to time for starting from zero value.
-    return (cos(TWO_PI * (t + 0.5)* freq + phase) + 1.) * 0.5;
+    return (cos(TWO_PI * (t + 0.5) * freq + phase) + 1.) * 0.5;
 }
 //train~
 inline float train(float t, float freq, float duty_ratio, float phase){
@@ -166,6 +183,7 @@ inline void add_ctrl_event(MidiFile& midifile, int track_id,
     midievent[2] = val;
     midifile.addEvent(track_id, action_time, midievent);
 }
+
 
 inline void add_ctrl_events(MidiFile& midifile,
                             int track_id,
@@ -197,13 +215,20 @@ inline void add_notes_with_condition(MidiFile& midifile,
                                      vector<int> random_velocity,
                                      EaseFn fn,
                                      CondFn cn,
+                                     int note_duration = EIGHTH,
                                      int duration_in_ticks = ONEMEASURE)
 {
     for(int i=0;i<duration_in_ticks;i++){
         float current_pos_norm = i / static_cast<float>(duration_in_ticks);
-        float t = fn(current_pos_norm);
-        if(cn(t)){
-            
+        float val = fn(current_pos_norm);
+        if(cn(val)){
+            add_note_event(midifile,
+                           track_id,
+                           random_note[0],
+                           random_velocity[0],
+                           note_duration,
+                           i
+                           );
         }
     }
 }
@@ -212,6 +237,7 @@ inline void add_notes_with_condition(MidiFile& midifile,
 // stutter   Izotopeのstutterの様な物
 
 int main(int argc, char** argv) {
+    
    MidiFile outputfile;        // create an empty MIDI file with one track
 //       outputfile.absoluteTicks(); // time information stored as absolute time
 //       outputfile.setTicksPerQuarterNote(QUARTER);
@@ -219,28 +245,67 @@ int main(int argc, char** argv) {
     int velocity = 127;
 
     //control value
-    if(false){
-        std::function<float(float)> cycle_4x7hz = [](float t)->float{return
-            oscillator::cycle(t, 4., 0.) * oscillator::cycle(t, 7., 0.);};
+    int length = 32;
+    std::function<float(float)> cycle_4x7x11hz = [=](float t)->float{return
+        oscillator::cycle(t, 4. * length, 0.)
+        * oscillator::cycle(t, 7. * length, 0.)
+        * oscillator::cycle(t, 11. * length, 0.);};
 
-        add_ctrl_events(outputfile,
-                        track,
-                        1,
-                        0.,
-                        1.,
-                        cycle_4x7hz,
-                        ONEMEASURE*10,
-                        1);
-    }
+    add_ctrl_events(outputfile,
+                    track,
+                    1,
+                    0.,
+                    1.,
+                    cycle_4x7x11hz,
+                    ONEMEASURE * length,
+                    1);
+    
+
+    std::function<bool(float)> cond_func_1 = [](float t)->bool{
+        if(t==0.0 || t == 0.5 || t == 1.0){
+            return true;
+        }else{
+            return false;
+        }
+    };
 
     
+    add_notes_with_condition(outputfile, track, {BASS_DRUM}, {127}, cycle_4x7x11hz, cond_func_1
+                             ,EIGHTH,
+                             ONEMEASURE * length);
+
+    std::function<bool(float)> cond_func_2 = [](float t)->bool{
+        if(t==0.25 || t == 0.75){
+            return true;
+        }else{
+            return false;
+        }
+    };
+
+    track = outputfile.addTrack();
+
+    
+    add_notes_with_condition(outputfile, track, {SNARE}, {127}, cycle_4x7x11hz, cond_func_2
+                             ,EIGHTH,
+                             ONEMEASURE * length);
+
+    track = outputfile.addTrack();
+
     add_periodic(outputfile,
                  track,
                  HIGH_HAT,
                  velocity,
                  easeInOutCirc,
                  16,
-                 ONEMEASURE * 2 );
+                 ONEMEASURE * length );
+
+    add_periodic(outputfile,
+                 track,
+                 HIGH_HAT,
+                 velocity,
+                 easeInOutExpo,
+                 16,
+                 ONEMEASURE * length );
 
 //    track = outputfile.addTrack();
 //    add_pattern(outputfile,
