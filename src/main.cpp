@@ -11,6 +11,7 @@
 #include "Easing.h"
 #include <unistd.h>
 #include "MathConstants.h"
+#include <cstdlib>
 
 using namespace std;
 using namespace smf;
@@ -326,9 +327,11 @@ int main(int argc, char** argv) {
    outputfile.sortTracks();         // make sure data is in correct order
 
     // change path if you need
-    const char *homeDir = getenv("HOME");
-    string output_path = string(homeDir) + "/development/export/test.mid";
+    std::string homeDir = getenv("HOME");
+    std::string exportDir = homeDir + "/development/export/";
+    std::system(("mkdir -p " + exportDir).c_str());
+    string output_path = exportDir + "test.mid";
     outputfile.write(output_path);
-   return 0;
+    return 0;
 }
 
