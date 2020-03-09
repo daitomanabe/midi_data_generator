@@ -169,8 +169,6 @@ namespace oscillator{
     inline float tri(float t, float freq, float duty_cycle = 0.5f) {
         return std::fabs(std::fmod(std::fabs(t * freq), 1) - 0.5f) * 2.0f;
     }
-    // saw~
-    inline float saw(float t, float freq, float duty_cycle = 0.5f);
     // phasor~
     inline float phasor(float t, float freq) {
         float v = t * freq;
