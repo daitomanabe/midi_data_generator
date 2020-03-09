@@ -77,3 +77,4 @@ template <typename type>
 static inline constexpr type ABS(type x) {
     return (x < 0) ? -x : x;
 }
+
