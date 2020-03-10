@@ -1,5 +1,10 @@
 #include <type_traits>
 
+#pragma once
+
+#ifndef MATH_CONSTANTS
+#   define MATH_CONSTANTS
+
 #ifdef PI
 #   undef PI
 #endif
@@ -78,3 +83,4 @@ static inline constexpr type ABS(type x) {
     return (x < 0) ? -x : x;
 }
 
+#endif
