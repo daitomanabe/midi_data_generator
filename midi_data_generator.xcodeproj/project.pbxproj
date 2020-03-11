@@ -28,6 +28,7 @@
 		0A2047F624135E920053DC6A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0A2048A824135E930053DC6A /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
 		0A20492A24135EFA0053DC6A /* midi_data_generator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = midi_data_generator; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A4CEAC8241732C600D78657 /* UsefulFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UsefulFunctions.h; sourceTree = "<group>"; };
 		0ABF5A312416070600CC22B1 /* MathConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathConstants.h; sourceTree = "<group>"; };
 		955BED9F24167A6000532931 /* MathUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		955BEDA024178F6900532931 /* Randomize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Randomize.h; sourceTree = "<group>"; };
@@ -68,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				0A2047F624135E920053DC6A /* main.cpp */,
+				0A4CEAC8241732C600D78657 /* UsefulFunctions.h */,
 				0ABF5A312416070600CC22B1 /* MathConstants.h */,
 				955BED9F24167A6000532931 /* MathUtils.h */,
 				955BEDA024178F6900532931 /* Randomize.h */,

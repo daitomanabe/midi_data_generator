@@ -1,0 +1,24 @@
+playback < 再生位置の管理
+
+Phraseはnoteの組み合わせ、パターンで作られる、関数を指定
+条件式の関数 bool CondFn(float f)
+カーブの関数 float RampFn(float f)
+オシレータ関数 float OscFn(float f)
+
+
+Phrase = vector<int> note_list, RampFn fn, int div];
+
+PhraseA = [“0 1 2 1 2 2”, RampFn, div];
+PhraseB = [“0 1 2 1”, RampFn, div];
+PhraseC = [“1 2”, OscFn, CondFn];
+
+SequenceはPhraseの組み合わせ、パターンで作られる
+
+
+sequence
+.then<LinearPlayback(1)>(PhraseA)
+.then<Repeat(2)>(PhraseB)
+.then<Pingpong(1)>(PhraseC);
+
+SongはSequenceの組み合わせ、パターンで作られる
+

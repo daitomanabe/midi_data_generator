@@ -13,6 +13,7 @@
 #include "Easing.h"
 #include <unistd.h>
 #include "MathConstants.h"
+#include "UsefulFunctions.h"
 #include <cstdlib>
 
 using namespace std;
@@ -65,10 +66,11 @@ void add_periodic(MidiFile& midifile,
                   int velocity = 127,
                   const EaseFn &ease_fn = &easeNone,
                   int div = 8,
-                  int duration_in_ticks = ONEMEASURE){
+                  int duration_in_ticks = ONEMEASURE,
+                  int start_point_in_ticks = 0){
     for(int i=0; i<div ;i++){
         float current_pos_norm = i / static_cast<float>(div);
-        int action_time = ease_fn(current_pos_norm) * duration_in_ticks;
+        int action_time = ease_fn(current_pos_norm) * duration_in_ticks + start_point_in_ticks;
         vector<uchar> midievent;
         midievent.resize(3);
         midievent[0] = NOTE_ON;
@@ -255,67 +257,65 @@ int main(int argc, char** argv) {
     int velocity = 127;
 
     //control value
-    int length = 32;
-    std::function<float(float)> cycle_4x7x11hz = [=](float t)->float{return
-        oscillator::cycle(t, 4. * length, 0.)
-        * oscillator::cycle(t, 7. * length, 0.)
-        * oscillator::cycle(t, 11. * length, 0.);};
+//    int length = 32;
+//    std::function<float(float)> cycle_4x7x11hz = [=](float t)->float{return
+//        oscillator::cycle(t, 4. * length, 0.)
+//        * oscillator::cycle(t, 7. * length, 0.)
+//        * oscillator::cycle(t, 11. * length, 0.);};
+//
+//    add_ctrl_events(outputfile,
+//                    track,
+//                    1,
+//                    0.,
+//                    1.,
+//                    cycle_4x7x11hz,
+//                    ONEMEASURE * length,
+//                    1);
+//
+//
+//    std::function<bool(float)> cond_func_1 = [](float t)->bool{
+//        if(t==0.0 || t == 0.5 || t == 1.0){
+//            return true;
+//        }else{
+//            return false;
+//        }
+//    };
+//
+//
+//    add_notes_with_condition(outputfile, track, {BASS_DRUM}, {127}, cycle_4x7x11hz, cond_func_1
+//                             ,EIGHTH,
+//                             ONEMEASURE * length);
+//
+//    std::function<bool(float)> cond_func_2 = [](float t)->bool{
+//        if(t==0.25 || t == 0.75){
+//            return true;
+//        }else{
+//            return false;
+//        }
+//    };
+//
+//    track = outputfile.addTrack();
+//
+//
+//    add_notes_with_condition(outputfile, track, {SNARE}, {127}, cycle_4x7x11hz, cond_func_2
+//                             ,EIGHTH,
+//                             ONEMEASURE * length);
 
-    add_ctrl_events(outputfile,
-                    track,
-                    1,
-                    0.,
-                    1.,
-                    cycle_4x7x11hz,
-                    ONEMEASURE * length,
-                    1);
-    
+//    track = outputfile.addTrack();
 
-    std::function<bool(float)> cond_func_1 = [](float t)->bool{
-        if(t==0.0 || t == 0.5 || t == 1.0){
-            return true;
-        }else{
-            return false;
-        }
-    };
+    int position = 0;
+    for(int i=0;i<16;i++){
+        add_periodic(outputfile,
+                     track,
+                     BASS_DRUM,
+                     velocity,
+                     easeInOutCirc,
+                     16,
+                     ONEMEASURE,
+                     i * ONEMEASURE * 0.6666);
+    }
 
-    
-    add_notes_with_condition(outputfile, track, {BASS_DRUM}, {127}, cycle_4x7x11hz, cond_func_1
-                             ,EIGHTH,
-                             ONEMEASURE * length);
 
-    std::function<bool(float)> cond_func_2 = [](float t)->bool{
-        if(t==0.25 || t == 0.75){
-            return true;
-        }else{
-            return false;
-        }
-    };
-
-    track = outputfile.addTrack();
-
-    
-    add_notes_with_condition(outputfile, track, {SNARE}, {127}, cycle_4x7x11hz, cond_func_2
-                             ,EIGHTH,
-                             ONEMEASURE * length);
-
-    track = outputfile.addTrack();
-
-    add_periodic(outputfile,
-                 track,
-                 HIGH_HAT,
-                 velocity,
-                 easeInOutCirc,
-                 16,
-                 ONEMEASURE * length );
-
-    add_periodic(outputfile,
-                 track,
-                 HIGH_HAT,
-                 velocity,
-                 easeInOutExpo,
-                 16,
-                 ONEMEASURE * length );
 
 //    track = outputfile.addTrack();
 //    add_pattern(outputfile,
