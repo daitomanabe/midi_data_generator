@@ -5,6 +5,8 @@
 //  Created by Daito Manabe on 2020/03/07.
 //
 
+#include "test_2bit.hpp"
+
 #include <iostream>
 #include <random>
 #include "MidiFile.h"
@@ -339,6 +341,9 @@ int main(int argc, char** argv) {
     std::system(("mkdir -p " + exportDir).c_str());
     string output_path = exportDir + "test.mid";
     outputfile.write(output_path);
+    
+    test_2bit::test();
+    
     return 0;
 }
 

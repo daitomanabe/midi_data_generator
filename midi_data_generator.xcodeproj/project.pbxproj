@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A2048CC24135E930053DC6A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A2047F624135E920053DC6A /* main.cpp */; };
+		955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 955BEDA22417EC1600532931 /* test_2bit.cpp */; };
 		95A3A04B2413989F00F599C3 /* libmidifile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A3A0492413989F00F599C3 /* libmidifile.a */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,9 @@
 		0ABF5A312416070600CC22B1 /* MathConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathConstants.h; sourceTree = "<group>"; };
 		955BED9F24167A6000532931 /* MathUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		955BEDA024178F6900532931 /* Randomize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Randomize.h; sourceTree = "<group>"; };
+		955BEDA12417EB3500532931 /* Quantize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Quantize.h; sourceTree = "<group>"; };
+		955BEDA22417EC1600532931 /* test_2bit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_2bit.cpp; sourceTree = "<group>"; };
+		955BEDA32417EC1600532931 /* test_2bit.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = test_2bit.hpp; sourceTree = "<group>"; };
 		95A3A0412413989F00F599C3 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
 		95A3A0422413989F00F599C3 /* MidiFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiFile.h; sourceTree = "<group>"; };
 		95A3A0432413989F00F599C3 /* MidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventList.h; sourceTree = "<group>"; };
@@ -67,6 +71,9 @@
 				0ABF5A312416070600CC22B1 /* MathConstants.h */,
 				955BED9F24167A6000532931 /* MathUtils.h */,
 				955BEDA024178F6900532931 /* Randomize.h */,
+				955BEDA12417EB3500532931 /* Quantize.h */,
+				955BEDA22417EC1600532931 /* test_2bit.cpp */,
+				955BEDA32417EC1600532931 /* test_2bit.hpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -191,6 +198,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */,
 				0A2048CC24135E930053DC6A /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
