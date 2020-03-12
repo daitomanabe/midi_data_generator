@@ -35,6 +35,8 @@
 		955BEDA22417EC1600532931 /* test_2bit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_2bit.cpp; sourceTree = "<group>"; };
 		955BEDA32417EC1600532931 /* test_2bit.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = test_2bit.hpp; sourceTree = "<group>"; };
 		955BEDA52419447700532931 /* Sequencer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sequencer.h; sourceTree = "<group>"; };
+		955BEDA6241A3CFD00532931 /* Oscillator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Oscillator.h; sourceTree = "<group>"; };
+		955BEDA7241A3D9200532931 /* MidiConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		95A3A0412413989F00F599C3 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
 		95A3A0422413989F00F599C3 /* MidiFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiFile.h; sourceTree = "<group>"; };
 		95A3A0432413989F00F599C3 /* MidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventList.h; sourceTree = "<group>"; };
@@ -69,6 +71,8 @@
 			isa = PBXGroup;
 			children = (
 				0A2047F624135E920053DC6A /* main.cpp */,
+				955BEDA7241A3D9200532931 /* MidiConstants.h */,
+				955BEDA6241A3CFD00532931 /* Oscillator.h */,
 				0ABF5A312416070600CC22B1 /* MathConstants.h */,
 				955BED9F24167A6000532931 /* MathUtils.h */,
 				955BEDA024178F6900532931 /* Randomize.h */,

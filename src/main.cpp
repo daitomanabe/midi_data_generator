@@ -7,35 +7,25 @@
 
 #include "test_2bit.hpp"
 
-#include <iostream>
-#include <random>
+#include "MathConstants.h"
+#include "MathUtils.h"
+#include "Oscillator.h"
+
+#include "MidiConstants.h"
+
 #include "MidiFile.h"
 #include "Easing.h"
-#include <unistd.h>
-#include "MathConstants.h"
+
+#include <iostream>
+#include <random>
 #include <cstdlib>
+
+#include <unistd.h>
 
 using namespace std;
 using namespace smf;
 using namespace choreograph;
-
-#define NOTE_OFF 0x80;
-#define NOTE_ON 0x90;
-#define POLYPHONIC_PRESSURE 0xA0:
-#define CONTROL_CHANGE 0xB0:
-#define PROGRAM_CHANGE 0xC0:
-#define CHANNEL_PRESSURE 0xD0:
-#define PITCHBEND 0xE0:
-
-#define HIGH_HAT    59
-#define SNARE       38
-#define BASS_DRUM   36
- 
-#define ONEMEASURE 480
-#define QUARTER   120        /* ticks per quarter note */
-#define EIGHTH 60
-#define SIXTEENTH 30
-#define THIRTYSECOND 15
+using namespace MIDI;
 
 //ChoreographのEasing.hを使用
 typedef std::function<float (float)> EaseFn;
@@ -157,33 +147,6 @@ int duration_in_ticks = ONEMEASURE)
 {
 
 }
-
-//pitch bend , ctrl 用
-//tri,sin,cos,noise,
-//周波数はtick単位
-namespace oscillator{
-    inline float cycle(float t, float freq, float phase){
-        // add 0.5 to time for starting from zero value.
-        return (cos(TWO_PI * (t + 0.5) * freq + phase) + 1.) * 0.5;
-    }
-    //train~
-    //WIP
-    inline float train(float t, float freq, float duty_ratio, float phase){
-        return (fmod(t, 1.0f/ freq) < duty_ratio / freq) ? 0.f : 1.0f;
-    }
-    // tri~
-    inline float tri(float t, float freq, float duty_cycle = 0.5f) {
-        return std::fabs(std::fmod(std::fabs(t * freq), 1) - 0.5f) * 2.0f;
-    }
-    // phasor~
-    inline float phasor(float t, float freq) {
-        float v = t * freq;
-        return (v < 0.0) ? fmod(1.0 - fmod(-v, 1.0), 1.0) : std::fmod(v, 1.0);
-    }
-};
-
-typedef std::function<float (float, float , float)> OscFn;
-
 
 inline void add_ctrl_event(MidiFile& midifile, int track_id,
                            int channel,
