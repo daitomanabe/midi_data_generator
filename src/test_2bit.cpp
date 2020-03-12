@@ -9,8 +9,29 @@
 #include "test_2bit.hpp"
 #include "Randomize.h"
 #include "Quantize.h"
+#include "Sequencer.h"
 
 namespace test_2bit {
+    void test_sequencer(const std::string &exportDir) {
+        smf::MidiFile file;
+        file.setTPQ(120);
+        file.addTempo(0, 0, 120);
+        
+        auto phrase = sequencer::Phrase(
+            {46, 43, 43, 42, 45},
+            [](float t) { return t * t; },
+            [](float from, float to) {
+                return sequencer::notePerDiv(16)(from, to) && 0.2 < math::random(1.0);
+            });
+        
+        sequencer::Sequence()
+            .play(sequencer::PlayMode::Linear(1), phrase)
+            .then(sequencer::PlayMode::Repeat(3), {40, 41, 43, 42, 41}, [](float t) { return t * t; }, 16)
+            .then(sequencer::PlayMode::Pingpong(1), phrase)
+            .write(file);
+        file.write(exportDir + "sequence_test.mid");
+    }
+    
     void test() {
         std::string homeDir = getenv("HOME");
         std::string exportDir = homeDir + "/development/export/";
@@ -37,5 +58,7 @@ namespace test_2bit {
                             curve,
                             32);
         file.write(exportDir + "02_cos_32.mid");
+        
+        test_sequencer(exportDir);
     }
 }

@@ -28,13 +28,13 @@
 		0A2047F624135E920053DC6A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0A2048A824135E930053DC6A /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
 		0A20492A24135EFA0053DC6A /* midi_data_generator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = midi_data_generator; sourceTree = BUILT_PRODUCTS_DIR; };
-		0A4CEAC8241732C600D78657 /* UsefulFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UsefulFunctions.h; sourceTree = "<group>"; };
 		0ABF5A312416070600CC22B1 /* MathConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathConstants.h; sourceTree = "<group>"; };
 		955BED9F24167A6000532931 /* MathUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		955BEDA024178F6900532931 /* Randomize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Randomize.h; sourceTree = "<group>"; };
 		955BEDA12417EB3500532931 /* Quantize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Quantize.h; sourceTree = "<group>"; };
 		955BEDA22417EC1600532931 /* test_2bit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_2bit.cpp; sourceTree = "<group>"; };
 		955BEDA32417EC1600532931 /* test_2bit.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = test_2bit.hpp; sourceTree = "<group>"; };
+		955BEDA52419447700532931 /* Sequencer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sequencer.h; sourceTree = "<group>"; };
 		95A3A0412413989F00F599C3 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
 		95A3A0422413989F00F599C3 /* MidiFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiFile.h; sourceTree = "<group>"; };
 		95A3A0432413989F00F599C3 /* MidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventList.h; sourceTree = "<group>"; };
@@ -69,13 +69,13 @@
 			isa = PBXGroup;
 			children = (
 				0A2047F624135E920053DC6A /* main.cpp */,
-				0A4CEAC8241732C600D78657 /* UsefulFunctions.h */,
 				0ABF5A312416070600CC22B1 /* MathConstants.h */,
 				955BED9F24167A6000532931 /* MathUtils.h */,
 				955BEDA024178F6900532931 /* Randomize.h */,
 				955BEDA12417EB3500532931 /* Quantize.h */,
 				955BEDA22417EC1600532931 /* test_2bit.cpp */,
 				955BEDA32417EC1600532931 /* test_2bit.hpp */,
+				955BEDA52419447700532931 /* Sequencer.h */,
 			);
 			path = src;
 			sourceTree = "<group>";

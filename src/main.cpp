@@ -13,7 +13,6 @@
 #include "Easing.h"
 #include <unistd.h>
 #include "MathConstants.h"
-#include "UsefulFunctions.h"
 #include <cstdlib>
 
 using namespace std;
