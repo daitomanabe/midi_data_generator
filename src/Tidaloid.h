@@ -1,4 +1,5 @@
 #include "MidiConstants.h"
+#include "MidiSetting.h"
 
 #include <iostream>
 #include <vector>
@@ -50,27 +51,23 @@ namespace tidaloid {
         std::vector<command::ref> layers;
 
         void print(std::ostream &os, std::string indent) const {
-            if(is_note()) {
-                os << indent << note() << "\n";
+            if(layers.size()) for(auto &layer : layers) {
+                layer->print(os, indent);
             } else {
-                os << indent << "[\n";
-                for(auto &c : children) {
-                    c->print(os, indent + "  ");
+                if(is_note()) {
+                    os << indent << note() << "\n";
+                } else {
+                    os << indent << "[\n";
+                    for(auto &c : children) {
+                        c->print(os, indent + "  ");
+                    }
+                    os << indent << "]\n";
                 }
-                os << indent << "]\n";
             }
         }
         
         friend std::ostream &operator<<(std::ostream &os, const command::ref command) {
-            if(command->is_note()) {
-                os << command->note();
-            } else {
-                os << "[\n";
-                for(auto &c : command->children) {
-                    c->print(os, "  ");
-                }
-                os << "]\n";
-            }
+            command->print(os, "");
             return os;
         }
 
@@ -240,6 +237,14 @@ namespace tidaloid {
         auto &&sequence = parse(sequence_str);
         detail::eval_impl(file, track_id, sequence, note_table, duration_in_ticks, offset_in_ticks);
         file.sortTracks();
+    }
+    
+    inline static void eval(smf::MidiFile &file,
+                            std::string sequence_str,
+                            const std::map<std::string, int> &note_table,
+                            MIDI::Setting setting) 
+    {
+        eval(file, setting.track_id, sequence_str, note_table, setting.duration_in_ticks, setting.offset_in_ticks);
     }
 }
 
