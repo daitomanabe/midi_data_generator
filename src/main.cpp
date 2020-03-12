@@ -167,8 +167,7 @@ namespace oscillator{
     //train~
     //WIP
     inline float train(float t, float freq, float duty_ratio, float phase){
-        float val = 0.;
-        return val;
+        return (fmod(t, 1.0f/ freq) < duty_ratio / freq) ? 0.f : 1.0f;
     }
     // tri~
     inline float tri(float t, float freq, float duty_cycle = 0.5f) {
@@ -257,7 +256,6 @@ int main(int argc, char** argv) {
     int track = outputfile.addTrack();
     int velocity = 127;
 
-    
     //control value
 //    int length = 32;
 //    std::function<float(float)> cycle_4x7x11hz = [=](float t)->float{return
