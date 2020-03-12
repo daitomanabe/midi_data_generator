@@ -1,3 +1,5 @@
+#include "MidiConstants.h"
+
 #include <iostream>
 #include <vector>
 #include <map>
@@ -5,7 +7,7 @@
 #include <regex>
 #include <exception>
 
-namespace tidaloid {
+namespace Tidaloid {
     enum class command_type : std::uint8_t {
         note,
         group
@@ -29,6 +31,9 @@ namespace tidaloid {
         void add(command::ref command)
         { children.push_back(std::move(command)); };
         
+        void add_layer(command::ref command)
+        { layers.push_back(std::move(command)); };
+        
         void add_note(std::string note_name) {
             auto note = create(command_type::note);
             note->set_note(note_name);
@@ -42,14 +47,40 @@ namespace tidaloid {
         { this->name = std::move(name); };
         
         std::vector<command::ref> children;
+        std::vector<command::ref> layers;
+
+        void print(std::ostream &os, std::string indent) const {
+            if(is_note()) {
+                os << indent << note() << "\n";
+            } else {
+                os << indent << "[\n";
+                for(auto &c : children) {
+                    c->print(os, indent + "  ");
+                }
+                os << indent << "]\n";
+            }
+        }
         
+        friend std::ostream &operator<<(std::ostream &os, const command::ref command) {
+            if(command->is_note()) {
+                os << command->note();
+            } else {
+                os << "[\n";
+                for(auto &c : command->children) {
+                    c->print(os, "  ");
+                }
+                os << "]\n";
+            }
+            return os;
+        }
+
     protected:
         const command_type type;
         std::string name;
     };
-        
+
     namespace detail {
-        bool validate(const std::string &command) {
+        inline static bool validate(const std::string &command) {
             auto nest_begin_num = std::count(command.begin(), command.end(), '[');
             auto nest_end_num = std::count(command.begin(), command.end(), ']');
             if(nest_begin_num != nest_end_num) {
@@ -70,7 +101,7 @@ namespace tidaloid {
             }
             return true;
         }
-        std::string normalize(const std::string &command) {
+        inline static std::string normalize(const std::string &command) {
             std::regex special_chars{"[\\[|\\]|\\,]"};
             std::regex spaces{"\\ +"};
             std::regex empty_group{"\\[\\ *\\]"};
@@ -81,9 +112,9 @@ namespace tidaloid {
             auto res = std::regex_replace(not_treated, treat_target, "");
             return res;
         }
-        std::vector<std::string> split_by_space(std::string normalized_command) {
-            int first = 0;
-            int last = normalized_command.find_first_of(' ');
+        inline static std::vector<std::string> split_by_space(std::string normalized_command) {
+            auto last = normalized_command.find_first_of(' ');
+            decltype(last) first = 0;
 
             std::vector<std::string> result;
 
@@ -103,7 +134,7 @@ namespace tidaloid {
             return result;
         }
         
-        std::shared_ptr<command> make_smart(std::shared_ptr<command> node) {
+        inline static std::shared_ptr<command> make_smart(std::shared_ptr<command> node) {
             if(!node || node->children.size() == 0) {
                 return node;
             } else if(1 < node->children.size()) {
@@ -117,10 +148,10 @@ namespace tidaloid {
         }
     };
     
-    command::ref parse_group(std::vector<std::string>::iterator &it) {
+    inline static command::ref parse_group(std::vector<std::string>::iterator &it) {
         auto group = command::create(command_type::group);
         auto current = command::create(command_type::group);
-        group->add(current);
+        group->add_layer(current);
         while(*it != "]") {
             auto c = *it;
             if(c == "[") {
@@ -128,7 +159,7 @@ namespace tidaloid {
                 current->add(std::move(command));
             } else if(c == ",") {
                 current = command::create(command_type::group);
-                group->add(current);
+                group->add_layer(current);
             } else {
                 current->add_note(c);
             }
@@ -137,7 +168,7 @@ namespace tidaloid {
         return detail::make_smart(group);
     }
     
-    command::ref parse(const std::string &command) {
+    inline static command::ref parse(const std::string &command) {
         if(!detail::validate(command)) {
             return {};
         }
@@ -147,7 +178,7 @@ namespace tidaloid {
         
         auto group = command::create(command_type::group);
         auto current = command::create(command_type::group);
-        group->add(current);
+        group->add_layer(current);
         
         while(it != sequence.end()) {
             auto c = *it;
@@ -156,7 +187,7 @@ namespace tidaloid {
                 current->add(std::move(command));
             } else if(c == ",") {
                 current = command::create(command_type::group);
-                group->add(current);
+                group->add_layer(current);
             } else {
                 current->add_note(c);
             }
@@ -165,36 +196,50 @@ namespace tidaloid {
         return detail::make_smart(group);
     }
     
-    void print(std::ostream &os, const command::ref command, std::string indent) {
-        if(command->is_note()) {
-            os << indent << command->note() << "\n";
-        } else {
-            os << indent << "[\n";
-            for(auto &c : command->children) {
-                print(os, c, indent + "  ");
+    namespace detail {
+        inline static void eval_impl(smf::MidiFile &file,
+                                     int track_id,
+                                     command::ref sequence,
+                                     const std::map<std::string, int> &note_table,
+                                     int duration_in_ticks = MIDI::ONEMEASURE,
+                                     int offset_in_ticks = 0)
+        {
+            for(const auto &layer : sequence->layers) {
+                const auto &children = layer->children;
+                const float unit_duration = duration_in_ticks / (float)children.size();
+                for(std::size_t i = 0; i < children.size(); ++i) {
+                    const auto &c = children[i];
+                    int offset = unit_duration * i;
+                    if(c->is_note()) {
+                        if(note_table.find(c->note()) == note_table.end()) continue;
+                        auto note = note_table.at(c->note());
+                        file.addNoteOn(track_id,
+                                       offset_in_ticks + offset,
+                                       0,
+                                       note,
+                                       100);
+                        file.addNoteOff(track_id,
+                                        offset_in_ticks + offset + 30,
+                                        0,
+                                        note);
+                    } else {
+                        eval_impl(file, track_id, c, note_table, unit_duration, offset);
+                    }
+                }
             }
-            os << indent << "]\n";
         }
     }
     
-    std::ostream &operator<<(std::ostream &os, const command::ref command) {
-        if(command->is_note()) {
-            os << command->note();
-        } else {
-            os << "[\n";
-            for(auto &c : command->children) {
-                print(os, c, "  ");
-            }
-            os << "]\n";
-        }
-        
-        return os;
+    inline static void eval(smf::MidiFile &file,
+                            int track_id,
+                            std::string sequence_str,
+                            const std::map<std::string, int> &note_table,
+                            int duration_in_ticks = MIDI::ONEMEASURE,
+                            int offset_in_ticks = 0)
+    {
+        auto &&sequence = parse(sequence_str);
+        detail::eval_impl(file, track_id, sequence, note_table, duration_in_ticks, offset_in_ticks);
+        file.sortTracks();
     }
 }
 
-int main(int argc, char *argv[]) {
-    std::string command = "[[bd sd bd, sd], hh hh, ch ch]";
-    auto seq = tidaloid::parse(command);
-    std::cout << "seq: " << seq << std::endl;
-    return 0;
-}
