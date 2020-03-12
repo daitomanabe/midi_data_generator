@@ -58,8 +58,8 @@ namespace test_2bit {
     }
     
     void test_tidaloid(const std::string &exportDir) {
-        std::string sequence = "[[bd sd1 bd, _ sd2 _ sd2], hh hh [ho hh] hh hh hh [ho hh] [hh hh]]";
         smf::MidiFile file;
+        std::string sequence = "[[bd sd1 bd, _ sd2 _ sd2], hh hh [ho hh] hh hh hh [ho hh] [hh hh]]";
         int track_id = file.addTrack();
         
         std::map<std::string, int> note_table = {
@@ -71,7 +71,30 @@ namespace test_2bit {
         };
         
         tidaloid::eval(file, track_id, sequence, note_table);
+        
+        track_id = file.addTrack();
+        sequence = "[bd bd bd bd], [[ho hh] [ho hh] [ho ho hh]], [sd1 sd2 sd1 sd2 sd1]";
+        std::cout << tidaloid::parse(sequence);
+        tidaloid::eval(file, track_id, sequence, note_table);
         file.write(exportDir + "tidaloid_test.mid");
+    }
+    
+    void test_randomize(std::string exportDir) {
+        smf::MidiFile file;
+        int track = file.addTrack();
+        randomize::fill_by_perlin(file,
+                                  track,
+                                  {MIDI::C_1, MIDI::D_1, MIDI::Fs_1, MIDI::Gs_1},
+                                  0.5f,
+                                  64,
+                                  4 * MIDI::ONEMEASURE);
+        track = file.addTrack();
+        randomize::arpeggiate_by_perlin(file,
+                                        track,
+                                        {MIDI::C_4, MIDI::E_4, MIDI::G_4, MIDI::B_4},
+                                        64,
+                                        4 * MIDI::ONEMEASURE);
+        file.write(exportDir + "perlin.mid");
     }
     
     void test() {
@@ -81,5 +104,6 @@ namespace test_2bit {
         test_quantizer(importDir, exportDir);
         test_sequencer(exportDir);
         test_tidaloid(exportDir);
+        test_randomize(exportDir);
     }
 }
