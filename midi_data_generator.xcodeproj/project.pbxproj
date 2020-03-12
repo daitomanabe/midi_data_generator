@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0A2048CC24135E930053DC6A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A2047F624135E920053DC6A /* main.cpp */; };
 		955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 955BEDA22417EC1600532931 /* test_2bit.cpp */; };
+		955BEDB3241A9E6700532931 /* SimplexNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 955BEDB2241A9E6700532931 /* SimplexNoise.cpp */; };
 		95A3A04B2413989F00F599C3 /* libmidifile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A3A0492413989F00F599C3 /* libmidifile.a */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +39,9 @@
 		955BEDA6241A3CFD00532931 /* Oscillator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Oscillator.h; sourceTree = "<group>"; };
 		955BEDA7241A3D9200532931 /* MidiConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
 		955BEDA8241A4E3000532931 /* Tidaloid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tidaloid.h; sourceTree = "<group>"; };
+		955BEDB1241A9E6700532931 /* SimplexNoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimplexNoise.h; sourceTree = "<group>"; };
+		955BEDB2241A9E6700532931 /* SimplexNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimplexNoise.cpp; sourceTree = "<group>"; };
+		955BEDB4241AA37100532931 /* MidiSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MidiSetting.h; sourceTree = "<group>"; };
 		95A3A0412413989F00F599C3 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
 		95A3A0422413989F00F599C3 /* MidiFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiFile.h; sourceTree = "<group>"; };
 		95A3A0432413989F00F599C3 /* MidiEventList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventList.h; sourceTree = "<group>"; };
@@ -82,6 +86,7 @@
 				955BEDA32417EC1600532931 /* test_2bit.hpp */,
 				955BEDA52419447700532931 /* Sequencer.h */,
 				955BEDA8241A4E3000532931 /* Tidaloid.h */,
+				955BEDB4241AA37100532931 /* MidiSetting.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -89,6 +94,7 @@
 		0A2047F724135E920053DC6A /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				955BEDAD241A9E6700532931 /* SimplexNoise */,
 				95A3A03F2413989F00F599C3 /* midifile */,
 				0A20484524135E920053DC6A /* Choreograph */,
 			);
@@ -117,6 +123,23 @@
 				0A2048A824135E930053DC6A /* Easing.h */,
 			);
 			path = choreograph;
+			sourceTree = "<group>";
+		};
+		955BEDAD241A9E6700532931 /* SimplexNoise */ = {
+			isa = PBXGroup;
+			children = (
+				955BEDB0241A9E6700532931 /* src */,
+			);
+			path = SimplexNoise;
+			sourceTree = "<group>";
+		};
+		955BEDB0241A9E6700532931 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				955BEDB1241A9E6700532931 /* SimplexNoise.h */,
+				955BEDB2241A9E6700532931 /* SimplexNoise.cpp */,
+			);
+			path = src;
 			sourceTree = "<group>";
 		};
 		95A3A03F2413989F00F599C3 /* midifile */ = {
@@ -207,6 +230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */,
+				955BEDB3241A9E6700532931 /* SimplexNoise.cpp in Sources */,
 				0A2048CC24135E930053DC6A /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
