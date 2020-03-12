@@ -9,14 +9,18 @@
 #ifndef Randomize_h
 #define Randomize_h
 
+#include "MidiConstants.h"
+
 #include "MathConstants.h"
 #include "MathUtils.h"
 
 #include "MidiFile.h"
+#include "SimplexNoise.h"
 
 #include <set>
 #include <map>
 #include <vector>
+#include <algorithm>
 #include <iostream>
 
 #include <cstddef>
@@ -122,6 +126,67 @@ namespace randomize {
         
         file.sortTrack(track_id);
     }
+    
+    void fill_by_perlin(smf::MidiFile &file,
+                        int track_id,
+                        const std::vector<int> &notes,
+                        float threashold,
+                        int div,
+                        int duration_in_ticks = MIDI::ONEMEASURE)
+    {
+        float unit = 1.0f / div;
+        SimplexNoise simplex;
+        for(auto note : notes) {
+            for(auto i = 0; i < div; ++i) {
+                float p = i * unit;
+                float v = 0.5f * (simplex.noise(note, i) + 1.0f);
+                if(threashold < v) {
+                    file.addNoteOn(track_id,
+                                   duration_in_ticks * p,
+                                   0,
+                                   note,
+                                   127 * v);
+                    file.addNoteOff(track_id,
+                                    duration_in_ticks * (p + unit),
+                                    0,
+                                    note);
+                }
+            }
+        }
+        file.sortTracks();
+    }
+    
+    void arpeggiate_by_perlin(smf::MidiFile &file,
+                              int track_id,
+                              const std::vector<int> &notes,
+                              int div,
+                              int duration_in_ticks = MIDI::ONEMEASURE)
+    {
+        float unit = 1.0f / div;
+        SimplexNoise simplex;
+        for(auto i = 0; i < div; ++i) {
+            std::vector<float> vs;
+            vs.resize(notes.size());
+            std::transform(notes.begin(), notes.end(), vs.begin(), [i, &simplex](int note) {
+                return 0.5f * (simplex.noise(note, i) + 1.0f);
+            });
+            float p = i * unit;
+            auto it = std::max_element(vs.begin(), vs.end());
+            auto note = notes[std::distance(vs.begin(), it)];
+            float v = *it;
+            file.addNoteOn(track_id,
+                           duration_in_ticks * p,
+                           0,
+                           note,
+                           127 * v);
+            file.addNoteOff(track_id,
+                            duration_in_ticks * (p + unit),
+                            0,
+                            note);
+        }
+        file.sortTracks();
+    }
+
 };
 
 #endif /* Randomize_h */
