@@ -7,7 +7,7 @@
 #include <regex>
 #include <exception>
 
-namespace Tidaloid {
+namespace tidaloid {
     enum class command_type : std::uint8_t {
         note,
         group

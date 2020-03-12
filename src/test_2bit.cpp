@@ -70,7 +70,7 @@ namespace test_2bit {
             {"ho",  MIDI::Gs_1}
         };
         
-        Tidaloid::eval(file, track_id, sequence, note_table);
+        tidaloid::eval(file, track_id, sequence, note_table);
         file.write(exportDir + "tidaloid_test.mid");
     }
     
