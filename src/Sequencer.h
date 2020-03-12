@@ -159,7 +159,7 @@ namespace sequencer {
             file.sortTracks();
         }
         
-        inline void write(smf::MidiFile &file, MIDI::Setting setting = {})
+        inline void write(smf::MidiFile &file, MIDI::Setting setting)
         { write(file, setting.duration_in_ticks / 4, setting.track_id); };
         
         std::vector<playable_phrase> phrases;
