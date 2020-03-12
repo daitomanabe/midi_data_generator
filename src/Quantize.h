@@ -12,6 +12,9 @@
 #include "MathConstants.h"
 #include "MathUtils.h"
 
+#include "MidiConstants.h"
+#include "MidiSetting.h"
+
 #include "MidiFile.h"
 
 #include <set>
@@ -32,7 +35,7 @@ namespace quantize {
     */
     void per_ticks(smf::MidiFile &file,
                    std::function<float(float)> curve,
-                   std::size_t unit_ticks = 480, // TODO: replace ONEMEASURE
+                   std::size_t unit_ticks = MIDI::ONEMEASURE,
                    int track_id = -1)
     {
         std::cout << "track: " << track_id << "TPQ: " << file.getTPQ() << std::endl;
@@ -55,30 +58,12 @@ namespace quantize {
         file.sortTrack(track_id);
     }
     
-//    void per_ticks(smf::MidiFile &file,
-//                   std::function<float(float)> curve,
-//                   std::size_t unit_ticks = 480, // TODO: replace ONEMEASURE
-//                   int track_id = -1)
-//    {
-//        std::cout << "track: " << track_id << "TPQ: " << file.getTPQ() << std::endl;
-//        if(track_id < 0) {
-//            for(auto i = 0; i < file.getNumTracks(); ++i) {
-//                per_ticks(file, curve, unit_ticks, i);
-//            }
-//            return;
-//        } else if(file.getNumTracks() < track_id) {
-//            std::cerr << "given track_id is out of bounds: track_id must be less than " << file.getNumTracks() << " but " << track_id << " is given." << std::endl;
-//        }
-//
-//        auto &event_list = file[track_id];
-//        for(auto i = 0; i < event_list.size(); ++i) {
-//            auto &event = event_list[i];
-//            int tick_num = event.tick / unit_ticks;
-//            int tick_offset = event.tick % unit_ticks;
-//            event.tick = tick_num * unit_ticks + curve(tick_offset / (float)unit_ticks) * unit_ticks;
-//        }
-//        file.sortTrack(track_id);
-//    }
+    void per_ticks(smf::MidiFile &file,
+                   std::function<float(float)> curve,
+                   MIDI::Setting setting = {MIDI::AllTrack, MIDI::ONEMEASURE, 0})
+    {
+        per_ticks(file, curve, setting.duration_in_ticks, setting.track_id);
+    }
 };
 
 #endif /* Quantize_h */
