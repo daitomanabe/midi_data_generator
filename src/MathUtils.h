@@ -170,16 +170,16 @@ namespace math {
     }
 
     template <typename T=int>
-    inline const T rnd_list(const std::vector<T> mylist) {
-      return static_cast<T>(mylist[rand()%mylist.size()]);
+    inline const T rnd_list(const std::vector<T> &mylist) {
+      return static_cast<T>(mylist[rand() % mylist.size()]);
     }
 
     template <typename T=int>
-    T cycle_step(std::vector<T> v, int step) {
-      return v.at(step%v.size());
+    T cycle_step(const std::vector<T> &v, int step) {
+      return v.at(step % v.size());
     }
 
-    std::vector<int> rotR(std::vector<int>& notes, std::vector<int> scale) {
+    std::vector<int> rotR(std::vector<int>& notes, const std::vector<int> &scale) {
       std::transform(notes.begin(),notes.end(),notes.begin(),[&scale](int note){
         note += 1;
         note %= scale.size();
@@ -190,7 +190,7 @@ namespace math {
       return notes;
     }
 
-    std::vector<int> rotL(std::vector<int>& notes, std::vector<int> scale) {
+    std::vector<int> rotL(std::vector<int>& notes, const std::vector<int> &scale) {
       transform(notes.begin(),notes.end(),notes.begin(),[&scale](int note){
         note -= 1;
         note %= static_cast<int>(scale.size());
