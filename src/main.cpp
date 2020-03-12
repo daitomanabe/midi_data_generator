@@ -141,8 +141,11 @@ void add_notes(MidiFile& midifile,
                 int repeat_time = 10, //
                 float repeat_interval = THIRTYSECOND, //
                 float repeat_decrease_interval = 10// in ticks リピートのたびにリピートの感覚が短くなる
-                );
+){
+    
+}
 
+//
 
 void addPitchBendTest(MidiFile& midifile,
 int track_id,
@@ -164,9 +167,9 @@ namespace oscillator{
         return (cos(TWO_PI * (t + 0.5) * freq + phase) + 1.) * 0.5;
     }
     //train~
+    //WIP
     inline float train(float t, float freq, float duty_ratio, float phase){
-        float val = 0.;
-        return val;
+        return (fmod(t, 1.0f/ freq) < duty_ratio / freq) ? 0.f : 1.0f;
     }
     // tri~
     inline float tri(float t, float freq, float duty_cycle = 0.5f) {
@@ -251,7 +254,7 @@ int main(int argc, char** argv) {
     
    MidiFile outputfile;        // create an empty MIDI file with one track
 //       outputfile.absoluteTicks(); // time information stored as absolute time
-//       outputfile.setTicksPerQuarterNote(QUARTER);
+    outputfile.setTicksPerQuarterNote(QUARTER);
     int track = outputfile.addTrack();
     int velocity = 127;
 

@@ -136,7 +136,6 @@ namespace math {
         inline double random(Engine &engine) {
             return default_dist(engine);
         }
-
         inline double random() {
             return random(engine_default);
         }
@@ -158,12 +157,53 @@ namespace math {
         inline double random(double min, double max) {
             return random(min, max, engine_default);
         }
+    
+
+    
     } // anonymouse namespace for random
     
+
+    #pragma mark vector random function
     template <typename Container>
     inline void shuffle(Container &v) {
         std::shuffle(v.begin(), v.end(), engine_mt19937);
     }
+
+    template <typename T=int>
+    inline const T rnd_list(const vector<T> mylist) {
+      return static_cast<T>(mylist[rand()%mylist.size()]);
+    }
+
+    template <typename T=int>
+    T cycle_step(vector<T> v, int step) {
+      return v.at(step%v.size());
+    }
+
+    vector<int> rotR(vector<int>& notes, vector<int> scale) {
+      transform(notes.begin(),notes.end(),notes.begin(),[&scale](int note){
+        note += 1;
+        note %= scale.size();
+        
+        return note;
+      });
+      
+      return notes;
+    }
+
+    vector<int> rotL(vector<int>& notes, vector<int> scale) {
+      transform(notes.begin(),notes.end(),notes.begin(),[&scale](int note){
+        note -= 1;
+        note %= static_cast<int>(scale.size());
+        
+        if (note < 0)
+          note = static_cast<int>(scale.size()-1);
+      
+        return note;
+      });
+
+      return notes;
+    }
+
 }
 
 #endif /* RandomUtils_h */
