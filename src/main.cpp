@@ -11,7 +11,6 @@
 #include "Easing.h"
 #include <unistd.h>
 #include "MathConstants.h"
-#include "UsefulFunctions.h"
 #include <cstdlib>
 
 using namespace std;
@@ -140,8 +139,11 @@ void add_notes(MidiFile& midifile,
                 int repeat_time = 10, //
                 float repeat_interval = THIRTYSECOND, //
                 float repeat_decrease_interval = 10// in ticks リピートのたびにリピートの感覚が短くなる
-                );
+){
+    
+}
 
+//
 
 void addPitchBendTest(MidiFile& midifile,
 int track_id,
@@ -163,6 +165,7 @@ namespace oscillator{
         return (cos(TWO_PI * (t + 0.5) * freq + phase) + 1.) * 0.5;
     }
     //train~
+    //WIP
     inline float train(float t, float freq, float duty_ratio, float phase){
         float val = 0.;
         return val;
@@ -250,10 +253,11 @@ int main(int argc, char** argv) {
     
    MidiFile outputfile;        // create an empty MIDI file with one track
 //       outputfile.absoluteTicks(); // time information stored as absolute time
-//       outputfile.setTicksPerQuarterNote(QUARTER);
+    outputfile.setTicksPerQuarterNote(QUARTER);
     int track = outputfile.addTrack();
     int velocity = 127;
 
+    
     //control value
 //    int length = 32;
 //    std::function<float(float)> cycle_4x7x11hz = [=](float t)->float{return
