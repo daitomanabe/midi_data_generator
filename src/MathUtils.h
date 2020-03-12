@@ -157,9 +157,6 @@ namespace math {
         inline double random(double min, double max) {
             return random(min, max, engine_default);
         }
-    
-
-    
     } // anonymouse namespace for random
     
 
@@ -175,11 +172,11 @@ namespace math {
     }
 
     template <typename T=int>
-    T cycle_step(const std::vector<T> &v, int step) {
+    inline T cycle_step(const std::vector<T> &v, int step) {
       return v.at(step % v.size());
     }
 
-    std::vector<int> rotR(std::vector<int>& notes, const std::vector<int> &scale) {
+    static inline std::vector<int> rotR(std::vector<int>& notes, const std::vector<int> &scale) {
       std::transform(notes.begin(),notes.end(),notes.begin(),[&scale](int note){
         note += 1;
         note %= scale.size();
@@ -190,7 +187,7 @@ namespace math {
       return notes;
     }
 
-    std::vector<int> rotL(std::vector<int>& notes, const std::vector<int> &scale) {
+    static inline std::vector<int> rotL(std::vector<int>& notes, const std::vector<int> &scale) {
       transform(notes.begin(),notes.end(),notes.begin(),[&scale](int note){
         note -= 1;
         note %= static_cast<int>(scale.size());
