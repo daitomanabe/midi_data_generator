@@ -58,8 +58,8 @@ namespace randomize {
         };
     };
     
-    void swap_pitches(smf::MidiFile &file,
-                      int track_id = -1)
+    inline static void swap_pitches(smf::MidiFile &file,
+                                    int track_id = -1)
     {
         if(track_id < 0) {
             for(auto i = 0; i < file.getNumTracks(); ++i) swap_pitches(file, i);
@@ -127,12 +127,12 @@ namespace randomize {
         file.sortTrack(track_id);
     }
     
-    void fill_by_perlin(smf::MidiFile &file,
-                        int track_id,
-                        const std::vector<int> &notes,
-                        float threashold,
-                        int div,
-                        int duration_in_ticks = MIDI::ONEMEASURE)
+    inline static void fill_by_perlin(smf::MidiFile &file,
+                                      int track_id,
+                                      const std::vector<int> &notes,
+                                      float threashold,
+                                      int div,
+                                      int duration_in_ticks = MIDI::ONEMEASURE)
     {
         float unit = 1.0f / div;
         SimplexNoise simplex;
@@ -156,11 +156,11 @@ namespace randomize {
         file.sortTracks();
     }
     
-    void arpeggiate_by_perlin(smf::MidiFile &file,
-                              int track_id,
-                              const std::vector<int> &notes,
-                              int div,
-                              int duration_in_ticks = MIDI::ONEMEASURE)
+    inline static void arpeggiate_by_perlin(smf::MidiFile &file,
+                                            int track_id,
+                                            const std::vector<int> &notes,
+                                            int div,
+                                            int duration_in_ticks = MIDI::ONEMEASURE)
     {
         float unit = 1.0f / div;
         SimplexNoise simplex;
