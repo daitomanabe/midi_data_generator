@@ -96,11 +96,11 @@ namespace math {
         std::minstd_rand &engine_default{engine_linear};
 
         template <typename Engine>
-        inline void set_seed(Engine &engine, typename Engine::result_type seed) {
+        inline void set_seed(Engine &engine, std::uint_fast64_t seed) {
             engine.seed(seed);
         }
 
-        inline void set_seed_fast(std::uint_fast32_t seed = device()) {
+        inline void set_seed_fast(std::uint_fast64_t seed = device()) {
             set_seed(engine_linear, seed);
         }
 
@@ -110,17 +110,17 @@ namespace math {
         
         std::mt19937_64 &engine_mt19937{detail::inline_variable<std::mt19937_64, struct engine_mt19937_tag>::get()};
 
-        inline void set_seed_mt(std::uint_fast32_t seed = device()) {
+        inline void set_seed_mt(std::uint_fast64_t seed = device()) {
             set_seed(engine_mt19937, seed);
         }
 
-        inline std::uint_fast32_t mt() {
+        inline std::uint_fast64_t mt() {
             return engine_mt19937();
         }
 
         std::mt19937_64 &engine_mt19937_64{detail::inline_variable<std::mt19937_64, struct engine_mt19937_64_tag>::get()};
 
-        inline void set_seed_mt64(std::uint_fast32_t seed = device()) {
+        inline void set_seed_mt64(std::uint_fast64_t seed = device()) {
             set_seed(engine_mt19937, seed);
         }
 
@@ -140,8 +140,10 @@ namespace math {
             return random(engine_default);
         }
 
-        template <typename Engine>
-        inline double random(double max, Engine &engine) {
+        template <typename value_type, typename Engine>
+        inline auto random(value_type max, Engine &engine)
+            -> typename std::enable_if<!std::is_arithmetic<Engine>::value, double>::type
+        {
             return std::uniform_real_distribution<double>(0.0, max)(engine);
         }
 
@@ -168,7 +170,7 @@ namespace math {
 
     template <typename T=int>
     inline const T rnd_list(const std::vector<T> &mylist) {
-      return static_cast<T>(mylist[rand() % mylist.size()]);
+        return static_cast<T>(mylist[rand() % mylist.size()]);
     }
 
     template <typename T=int>

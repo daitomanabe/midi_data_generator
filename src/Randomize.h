@@ -10,6 +10,7 @@
 #define Randomize_h
 
 #include "MidiConstants.h"
+#include "MidiSetting.h"
 
 #include "MathConstants.h"
 #include "MathUtils.h"
@@ -186,7 +187,73 @@ namespace randomize {
         }
         file.sortTracks();
     }
-
+    
+    struct PhraseStuttingSetting : MIDI::Setting {
+        int divisor{16};
+        struct {
+            MIDI::Probability probability{1.0f}; // 0.0f - 1.0f
+        } random_note;
+        struct {
+            MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
+        } dropout;
+        struct {
+            MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
+            int time{0};
+            int interval{MIDI::EIGHTH}; // in ticks
+            struct {
+                int min{0};
+                int max{0};
+            } decrease_interval;
+        } repeat;
+    };
+    
+    inline static void make_phrase(smf::MidiFile &file,
+                                   const std::vector<int> &notes,
+                                   const PhraseStuttingSetting &setting)
+    {
+        int unit = setting.duration_in_ticks / setting.divisor;
+        const auto &repeat = setting.repeat;
+        float normalizer = 1.0f / setting.duration_in_ticks;
+        for(auto i = 0; i < setting.divisor; ++i) {
+            if(setting.dropout.probability(i * unit * normalizer) < math::random()) {
+                int position = setting.offset_in_ticks + i * unit;
+                float normalized_position = position * normalizer;
+                int duration = repeat.interval;
+                int n = notes.size() * math::random() * setting.random_note.probability(normalized_position);
+                int note = notes[n];
+                file.addNoteOn(setting.track_id,
+                               position,
+                               0,
+                               note,
+                               100);
+                file.addNoteOff(setting.track_id,
+                                position + duration,
+                                0,
+                                note);
+                if(0 < repeat.time && math::random() < repeat.probability(normalized_position))
+                {
+                    int repeat_decrease_interval = math::random(repeat.decrease_interval.min, repeat.decrease_interval.max);
+                    position += duration;
+                    for(auto r = 0; r < setting.repeat.time; ++r) {
+                        duration -= repeat_decrease_interval;
+                        if(setting.duration_in_ticks < position + duration - setting.offset_in_ticks) break;
+                        file.addNoteOn(setting.track_id,
+                                       position,
+                                       0,
+                                       note,
+                                       100);
+                        if(duration < 0) duration = 1;
+                        file.addNoteOff(setting.track_id,
+                                        position + duration,
+                                        0,
+                                        note);
+                        position += duration;
+                    }
+                    i = (position - setting.offset_in_ticks) / unit;
+                }
+            }
+        }
+    }
 };
 
 #endif /* Randomize_h */

@@ -97,13 +97,48 @@ namespace test_2bit {
         file.write(exportDir + "perlin.mid");
     }
     
+    void test_phrase(std::string exportDir) {
+        math::set_seed_fast();
+        smf::MidiFile file;
+        randomize::PhraseStuttingSetting setting;
+        setting.duration_in_ticks = MIDI::ONEMEASURE * 4;
+        setting.track_id = file.addTrack();
+        setting.dropout.probability = 0.25f;
+        auto &repeat = setting.repeat;
+        repeat.probability = 0.7f;
+        repeat.time = 8;
+        repeat.interval = MIDI::EIGHTH;
+        repeat.decrease_interval.min = 5;
+        repeat.decrease_interval.max = 8;
+        randomize::make_phrase(file,
+                               {MIDI::C_3, MIDI::E_3, MIDI::Gs_3},
+                               setting);
+        
+        //
+        setting.track_id = file.addTrack();
+        setting.dropout.probability = 0.1f;
+        repeat.time = 16;
+        repeat.interval = MIDI::QUARTER;
+        repeat.decrease_interval.min = 10;
+        repeat.decrease_interval.max = 30;
+        repeat.probability = [](float t) { return t * 0.5f + 0.5f; };
+
+        randomize::make_phrase(file,
+                               {MIDI::C_1, MIDI::E_1, MIDI::Gs_1, MIDI::B_1},
+                               setting);
+
+        file.write(exportDir + "phrase.mid");
+    }
+    
     void test() {
         std::string homeDir = getenv("HOME");
-        std::string exportDir = homeDir + "/development/export/";
+        std::string exportDir = homeDir + "/development/export/2bit/";
+        system(("mkdir -p " + exportDir).c_str());
         std::string importDir = homeDir + "/development/import/";
         test_quantizer(importDir, exportDir);
         test_sequencer(exportDir);
         test_tidaloid(exportDir);
         test_randomize(exportDir);
+        test_phrase(exportDir);
     }
 }

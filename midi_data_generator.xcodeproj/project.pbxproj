@@ -77,6 +77,7 @@
 			children = (
 				0A2047F624135E920053DC6A /* main.cpp */,
 				955BEDA7241A3D9200532931 /* MidiConstants.h */,
+				955BEDB4241AA37100532931 /* MidiSetting.h */,
 				955BEDA6241A3CFD00532931 /* Oscillator.h */,
 				0ABF5A312416070600CC22B1 /* MathConstants.h */,
 				955BED9F24167A6000532931 /* MathUtils.h */,
@@ -86,7 +87,6 @@
 				955BEDA32417EC1600532931 /* test_2bit.hpp */,
 				955BEDA52419447700532931 /* Sequencer.h */,
 				955BEDA8241A4E3000532931 /* Tidaloid.h */,
-				955BEDB4241AA37100532931 /* MidiSetting.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
