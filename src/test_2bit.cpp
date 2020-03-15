@@ -18,7 +18,7 @@ namespace test_2bit {
         file.setTPQ(120);
         file.addTempo(0, 0, 120);
         
-        auto phrase = sequencer::Phrase(
+        auto phrase = sequencer::GeneratablePhrase(
             {46, 43, 43, 42, 45},
             [](float t) { return t * t; },
             [](float from, float to) {

@@ -34,23 +34,6 @@ namespace sequencer {
         };
     }
     
-    struct Phrase {
-        Phrase() = default;
-        Phrase(const Notes &notes, RampFn ramp, CondFn cond)
-        : notes{notes}
-        , ramp{ramp}
-        , cond{cond}
-        {};
-        
-        Phrase(const Notes &notes, RampFn ramp, int div)
-        : Phrase{notes, ramp, notePerDiv(div)}
-        {};
-        
-        Notes notes;
-        RampFn ramp;
-        CondFn cond;
-    };
-    
     struct PlayMode {
         enum class play_mode : std::uint8_t {
             repeat,
@@ -81,36 +64,99 @@ namespace sequencer {
         play_mode mode;
         std::size_t repeat_num{1};
     };
+
+    struct AbstractPhrase {
+        struct EvaluateParameter {
+            float from;
+            float to;
+            int tpq;
+            int tick;
+            int bar_tick;
+            int elapsed_bar;
+        };
+        virtual void evaluate(smf::MidiFile &file,
+                              int track_id,
+                              const EvaluateParameter &parameter) const = 0;
+    };
+    
+    using PhraseEvaluateParameter = AbstractPhrase::EvaluateParameter;
+    
+    struct GeneratablePhrase : AbstractPhrase {
+        GeneratablePhrase() = default;
+        GeneratablePhrase(const Notes &notes, RampFn ramp, CondFn cond)
+        : notes{notes}
+        , ramp{ramp}
+        , cond{cond}
+        {};
+        
+        GeneratablePhrase(const Notes &notes, RampFn ramp, int div)
+        : GeneratablePhrase{notes, ramp, notePerDiv(div)}
+        {};
+        
+        Notes notes;
+        RampFn ramp;
+        CondFn cond;
+        
+        void evaluate(smf::MidiFile &file,
+                      int track_id,
+                      const EvaluateParameter &parameter) const
+        {
+            if(cond(parameter.from, parameter.to)) {
+                int note_id = math::min(notes.size() * ramp(parameter.from), notes.size() - 1);
+                int key = notes[note_id];
+                file.addNoteOn(track_id,
+                               parameter.elapsed_bar * parameter.bar_tick + parameter.tick,
+                               0,
+                               key,
+                               100);
+                file.addNoteOff(track_id,
+                                parameter.elapsed_bar * parameter.bar_tick + parameter.tick + 30,
+                                0,
+                                key);
+            }
+
+        }
+    };
     
     struct Sequence {
         struct playable_phrase {
             playable_phrase() = default;
             playable_phrase(const playable_phrase &) = default;
             playable_phrase(playable_phrase &&) = default;
+            
+            template <typename Phrase, typename std::enable_if<std::is_base_of<AbstractPhrase, Phrase>::value> * = nullptr>
             playable_phrase(PlayMode &&playmode, const Phrase &phrase)
             : playmode{std::move(playmode)}
-            , phrase{phrase}
+            , phrase{std::make_shared<Phrase>(phrase)}
             {};
             
             PlayMode playmode;
-            Phrase phrase;
+            std::shared_ptr<AbstractPhrase> phrase;
         };
         
-        Sequence &play(PlayMode &&playmode, const Phrase &phrase) {
+        template <typename Phrase>
+        auto play(PlayMode &&playmode, const Phrase &phrase)
+            -> typename std::enable_if<std::is_base_of<AbstractPhrase, Phrase>::value, Sequence &>::type
+        {
             phrases.emplace_back(std::move(playmode), phrase);
             return *this;
         }
+        
         template <typename cond_t>
         Sequence &play(PlayMode &&playmode, const std::vector<int> &notes, RampFn ramp, cond_t cond) {
-            return play(std::move(playmode), Phrase{notes, ramp, cond});
+            return play(std::move(playmode), GeneratablePhrase{notes, ramp, cond});
         }
         
-        Sequence &then(PlayMode &&playmode, const Phrase &phrase) {
+        template <typename Phrase>
+        auto then(PlayMode &&playmode, const Phrase &phrase)
+            -> typename std::enable_if<std::is_base_of<AbstractPhrase, Phrase>::value, Sequence &>::type
+        {
             return play(std::move(playmode), phrase);
         }
+        
         template <typename cond_t>
         Sequence &then(PlayMode &&playmode, const std::vector<int> &notes, RampFn ramp, cond_t cond) {
-            return play(std::move(playmode), Phrase{notes, ramp, cond});
+            return play(std::move(playmode), GeneratablePhrase{notes, ramp, cond});
         }
         
         void write(smf::MidiFile &file, int tpq = 120, int track_id = -1) {
@@ -124,33 +170,26 @@ namespace sequencer {
                 const auto &phrase = phrase_pair.phrase;
                 for(auto i = 0; i < playmode.repeat_num; ++i) {
                     for(auto tick = 0; tick < bar_tick; ++tick) {
-                        float from = 0.0f, to = 0.0f;
+                        PhraseEvaluateParameter p;
+                        p.tick = tick;
+                        p.bar_tick = bar_tick;
+                        p.elapsed_bar = elapsed_bar;
+                        p.tpq = tpq;
+                        
                         if(playmode.mode == PlayMode::play_mode::reverse
                            || (
                                (playmode.mode == PlayMode::play_mode::pingpong)
                                && (i % 2 == 1)
                            )
-                        )
-                        {
-                            from = (float)(bar_tick - tick - 1) / bar_tick;
-                            to = (float)(bar_tick - tick) / bar_tick;
+                        ) {
+                            p.from = (float)(bar_tick - tick - 1) / bar_tick;
+                            p.to = (float)(bar_tick - tick) / bar_tick;
                         } else {
-                            from = (float)tick / bar_tick;
-                            to = (float)(tick + 1) / bar_tick;
+                            p.from = (float)tick / bar_tick;
+                            p.to = (float)(tick + 1) / bar_tick;
                         }
-                        if(phrase.cond(from, to)) {
-                            int note_id = math::min(phrase.notes.size() * phrase.ramp(from), phrase.notes.size() - 1);
-                            int key = phrase.notes[note_id];
-                            file.addNoteOn(track_id,
-                                           elapsed_bar * bar_tick + tick,
-                                           0,
-                                           key,
-                                           100);
-                            file.addNoteOff(track_id,
-                                            elapsed_bar * bar_tick + tick + 30,
-                                            0,
-                                            key);
-                        }
+                        
+                        phrase->evaluate(file, track_id, p);
                     }
                     
                     elapsed_bar++;
