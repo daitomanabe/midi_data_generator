@@ -74,7 +74,6 @@ namespace test_2bit {
         
         track_id = file.addTrack();
         sequence = "[bd bd bd bd], [[ho hh] [ho hh] [ho ho hh]], [sd1 sd2 sd1 sd2 sd1]";
-        std::cout << tidaloid::parse(sequence);
         tidaloid::eval(file, track_id, sequence, note_table);
         file.write(exportDir + "tidaloid_test.mid");
     }

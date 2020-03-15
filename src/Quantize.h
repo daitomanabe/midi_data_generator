@@ -38,7 +38,6 @@ namespace quantize {
                    std::size_t unit_ticks = MIDI::ONEMEASURE,
                    int track_id = -1)
     {
-        std::cout << "track: " << track_id << "TPQ: " << file.getTPQ() << std::endl;
         if(track_id < 0) {
             for(auto i = 0; i < file.getNumTracks(); ++i) {
                 per_ticks(file, curve, unit_ticks, i);

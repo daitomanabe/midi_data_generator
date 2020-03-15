@@ -117,7 +117,7 @@ namespace sequencer {
             if(track_id == -1) {
                 track_id = file.addTrack();
             }
-            std::size_t elapsed_bar = 0;
+            int elapsed_bar = 0;
             int bar_tick = tpq * 4;
             for(const auto &phrase_pair : phrases) {
                 const auto &playmode = phrase_pair.playmode;
