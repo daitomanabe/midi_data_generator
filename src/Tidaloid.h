@@ -216,7 +216,7 @@ namespace tidaloid {
                                        note,
                                        100);
                         file.addNoteOff(track_id,
-                                        offset_in_ticks + offset + 30,
+                                        offset_in_ticks + offset + unit_duration,
                                         0,
                                         note);
                     } else {
