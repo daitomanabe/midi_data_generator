@@ -120,6 +120,7 @@ namespace randomize {
                                         notes[i + 1].tick,
                                         notes[i + 1].channel,
                                         pitch);
+                        i++;
                     }
                 }
             }

@@ -129,15 +129,27 @@ namespace test_2bit {
         file.write(exportDir + "phrase.mid");
     }
     
+    void test_midi_phrase(std::string importDir, std::string exportDir) {
+        smf::MidiFile file;
+        smf::MidiFile output;
+        file.read(importDir + "basic.mid");
+        sequencer::MIDIFilePhrase phrase{file, 0, {0, file.getTPQ() * 4}};
+        sequencer::Sequence()
+            .play(sequencer::PlayMode::Pingpong(4), phrase)
+            .write(output);
+        output.write(exportDir + "basic_pingpon4.mid");
+    }
+    
     void test() {
         std::string homeDir = getenv("HOME");
         std::string exportDir = homeDir + "/development/export/2bit/";
         system(("mkdir -p " + exportDir).c_str());
         std::string importDir = homeDir + "/development/import/";
-        test_quantizer(importDir, exportDir);
-        test_sequencer(exportDir);
-        test_tidaloid(exportDir);
-        test_randomize(exportDir);
-        test_phrase(exportDir);
+//        test_quantizer(importDir, exportDir);
+//        test_sequencer(exportDir);
+//        test_tidaloid(exportDir);
+//        test_randomize(exportDir);
+//        test_phrase(exportDir);
+        test_midi_phrase(importDir, exportDir);
     }
 }
