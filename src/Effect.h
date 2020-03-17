@@ -35,6 +35,17 @@ namespace MIDI {
                                    int track_id,
                                    const StutterParameter &p)
         {
+            if(track_id == MIDI::AllTrack) {
+                for(auto i = 0; i < file.getNumTracks(); ++i) {
+                    std::cout << "tarck " << i << " will start" << std::endl;
+                    stutter(file, i, p);
+                }
+                return;
+            }
+            if(file.getNumEvents(track_id) == 0) {
+                std::cout << "empty track: " << track_id << std::endl;
+                return;
+            }
             StructuredNotes tracked_notes{file};
             if(tracked_notes.notes.find(track_id) == tracked_notes.notes.end()) {
                 std::cerr << "track_id " << track_id << " is not found on source file" << std::endl;
