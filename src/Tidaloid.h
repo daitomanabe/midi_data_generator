@@ -24,6 +24,27 @@ namespace tidaloid {
         : type{type}
         {};
         
+        command::ref clone() {
+            return std::make_shared<command>(*this);
+        }
+        
+        command(const command &mom)
+        : type{mom.type}
+        {
+            std::transform(mom.children.begin(),
+                           mom.children.end(),
+                           std::back_inserter(children),
+                           [](command::ref r)
+                           { return r->clone(); });
+            std::transform(mom.layers.begin(),
+                           mom.layers.end(),
+                           std::back_inserter(layers),
+                           [](command::ref r)
+                           { return r->clone(); });
+            name = mom.name;
+        }
+        command(command &&) = default;
+
         bool is_note() const
         { return type == command_type::note; };
         bool is_group() const
@@ -35,10 +56,11 @@ namespace tidaloid {
         void add_layer(command::ref command)
         { layers.push_back(std::move(command)); };
         
-        void add_note(std::string note_name) {
+        command::ref add_note(std::string note_name) {
             auto note = create(command_type::note);
             note->set_note(note_name);
-            children.push_back(std::move(note));
+            children.push_back(note);
+            return note;
         }
         
         std::string note() const
@@ -149,16 +171,28 @@ namespace tidaloid {
         auto group = command::create(command_type::group);
         auto current = command::create(command_type::group);
         group->add_layer(current);
+        command::ref prev_command;
+
         while(*it != "]") {
             auto c = *it;
             if(c == "[") {
                 auto command = parse_group(++it);
-                current->add(std::move(command));
+                prev_command = command->clone();
+                current->add(command);
             } else if(c == ",") {
                 current = command::create(command_type::group);
+                prev_command.reset();
                 group->add_layer(current);
+            } else if(c[0] == 'x' || c[0] == 'X' || std::all_of(c.begin() + 1, c.end(), [](int c) { return std::isdigit(c); })) {
+                auto num = std::stoi(std::string{c.begin() + 1, c.end()});
+                if(!prev_command) {
+                    std::cerr << ("illegal '" + c + "' command") << std::endl;
+                } else{
+                    for(auto i = 0; i < num - 1; ++i) current->add(prev_command->clone());
+                }
             } else {
-                current->add_note(c);
+                auto pc = current->add_note(c);
+                prev_command = pc->clone();
             }
             ++it;
         }
@@ -176,17 +210,28 @@ namespace tidaloid {
         auto group = command::create(command_type::group);
         auto current = command::create(command_type::group);
         group->add_layer(current);
-        
+        command::ref prev_command;
+
         while(it != sequence.end()) {
             auto c = *it;
             if(c == "[") {
                 auto command = parse_group(++it);
-                current->add(std::move(command));
+                prev_command = command->clone();
+                current->add(command);
             } else if(c == ",") {
                 current = command::create(command_type::group);
+                prev_command.reset();
                 group->add_layer(current);
+            } else if(c[0] == 'x' || c[0] == 'X' || std::all_of(c.begin() + 1, c.end(), [](int c) { return std::isdigit(c); })) {
+                auto num = std::stoi(std::string{c.begin() + 1, c.end()});
+                if(!prev_command) {
+                    std::cerr << ("illegal '" + c + "' command") << std::endl;
+                } else{
+                    for(auto i = 0; i < num - 1; ++i) current->add(prev_command->clone());
+                }
             } else {
-                current->add_note(c);
+                auto pc = current->add_note(c);
+                prev_command = pc->clone();
             }
             ++it;
         }
@@ -216,11 +261,11 @@ namespace tidaloid {
                                        note,
                                        100);
                         file.addNoteOff(track_id,
-                                        offset_in_ticks + offset + 30,
+                                        offset_in_ticks + offset + unit_duration,
                                         0,
                                         note);
                     } else {
-                        eval_impl(file, track_id, c, note_table, unit_duration, offset);
+                        eval_impl(file, track_id, c, note_table, unit_duration, offset_in_ticks + offset);
                     }
                 }
             }

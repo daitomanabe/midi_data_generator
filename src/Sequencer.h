@@ -257,6 +257,7 @@ namespace sequencer {
                       int track_id,
                       const EvaluateParameter &p) const
         {
+            if(notes.notes.find(this->track_id) == notes.notes.end()) return;
             auto &track_note = notes.notes.at(this->track_id);
             if(!p.is_reversed) {
                 int from = range(p.from);
@@ -269,7 +270,7 @@ namespace sequencer {
                 while(it != track_note.end()) {
                     int new_from = (it->range.from - range.from) * p.bar_tick / range.duration();
                     int new_to = (it->range.to - range.from) * p.bar_tick / range.duration();
-                    std::cout << "norm: " << new_from << " " << new_to << std::endl;
+//                    std::cout << "norm: " << new_from << " " << new_to << std::endl;
                     file.addNoteOn(track_id,
                                    p.elapsed_bar * p.bar_tick + new_from,
                                    it->channel,
@@ -297,7 +298,8 @@ namespace sequencer {
                 while(it != track_note.rend()) {
                     int new_from = (range.to - it->range.to) * p.bar_tick / range.duration();
                     int new_to = (range.to - it->range.from) * p.bar_tick / range.duration();
-                    std::cout << "rev: " << new_from << " " << new_to << std::endl;
+//                    std::cout << "rev: " << new_from << " " << new_to << std::endl;
+//                    std::cout << "  rev: " << it->range.from << " " << it->range.to << std::endl;
                     file.addNoteOn(track_id,
                                    p.elapsed_bar * p.bar_tick + new_from,
                                    it->channel,
@@ -362,7 +364,7 @@ namespace sequencer {
             return play(std::move(playmode), GeneratablePhrase{notes, ramp, cond});
         }
         
-        void write(smf::MidiFile &file, int tpq = 120, int track_id = -1) {
+        void write(smf::MidiFile &file, int track_id = -1, int tpq = 120) {
             if(track_id == -1) {
                 track_id = file.addTrack();
             }
@@ -404,7 +406,7 @@ namespace sequencer {
         }
         
         inline void write(smf::MidiFile &file, MIDI::Setting setting)
-        { write(file, setting.duration_in_ticks / 4, setting.track_id); };
+        { write(file, setting.track_id, setting.duration_in_ticks / 4); };
         
         std::vector<playable_phrase> phrases;
     };

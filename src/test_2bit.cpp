@@ -140,6 +140,37 @@ namespace test_2bit {
         output.write(exportDir + "basic_pingpon4.mid");
     }
     
+    void test_complex_pattern(std::string exportDir) {
+        smf::MidiFile file;
+        file.setTPQ(120);
+        int track_id = file.addTrack();
+//        std::string tidal_seq = "[bd sd] x3 [bd [sd sd]], [hh x2 [ho hh] hh] x2";
+        std::string tidal_seq = "[bd sd] x3 [bd [sd sd]], [hh x2 [ho hh] hh] x2";
+        std::cout << tidaloid::parse(tidal_seq) << std::endl;
+        tidaloid::eval(file, track_id, tidal_seq, {{"bd", MIDI::C_1}, {"sd", MIDI::E_1}, {"hh", MIDI::Fs_1}, {"ho", MIDI::Gs_1}});
+        
+        smf::MidiFile perlin;
+        perlin.setTPQ(120);
+        int perlin_track = perlin.addTrack();
+        randomize::fill_by_perlin(perlin,
+                                  perlin_track,
+                                  {MIDI::C_1, MIDI::E_1, MIDI::Fs_1, MIDI::Gs_1},
+                                  0.5f,
+                                  16,
+                                  MIDI::ONEMEASURE);
+        
+        sequencer::MIDIFilePhrase phrase1{file, track_id, {0, file.getTPQ() * 4}};
+        sequencer::MIDIFilePhrase phrase2{perlin, perlin_track, {0, perlin.getTPQ() * 4}};
+        
+        sequencer::Sequence()
+            .play(sequencer::PlayMode::Linear(4), phrase1)
+            .play(sequencer::PlayMode::Pingpong(4), phrase1)
+            .play(sequencer::PlayMode::Pingpong(4), phrase2)
+            .write(file, MIDI::Setting{track_id, MIDI::ONEMEASURE, 0});
+        
+        file.write(exportDir + "complex.mid");
+    }
+    
     void test() {
         std::string homeDir = getenv("HOME");
         std::string exportDir = homeDir + "/development/export/2bit/";
@@ -150,6 +181,7 @@ namespace test_2bit {
 //        test_tidaloid(exportDir);
 //        test_randomize(exportDir);
 //        test_phrase(exportDir);
-        test_midi_phrase(importDir, exportDir);
+//        test_midi_phrase(importDir, exportDir);
+        test_complex_pattern(exportDir);
     }
 }
