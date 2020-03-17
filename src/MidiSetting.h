@@ -10,6 +10,7 @@
 #define MidiSetting_h
 
 #include "MidiConstants.h"
+#include "MathUtils.h"
 
 #include <functional>
 
@@ -58,6 +59,42 @@ namespace MIDI {
         { return value(t); };
         
         std::function<float(float)> value;
+    };
+    
+    struct Range {
+        Range() = default;
+        Range(const Range &) = default;
+        Range(int min, int max)
+        : min{min}
+        , max{max}
+        {};
+        
+        Range &operator=(const Range &) = default;
+        
+        int min;
+        int max;
+        int random() const
+        { return math::random(min, max); };
+        inline int operator()() const
+        { return random(); };
+    };
+    
+    struct TickRange {
+        TickRange() = default;
+        TickRange(const TickRange &) = default;
+        TickRange(int from, int to)
+        : from{from}
+        , to{to}
+        {};
+        
+        TickRange &operator=(const TickRange &) = default;
+        
+        int from;
+        int to;
+        int random() const
+        { return math::random(from, to); };
+        inline int operator()() const
+        { return random(); };
     };
 };
 

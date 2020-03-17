@@ -27,20 +27,8 @@ namespace MIDI {
             struct {
                 MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
                 int time{0};
-                struct {
-                    int min{MIDI::SIXTEENTH}; // in ticks
-                    int max{MIDI::EIGHTH}; // in ticks
-                    int operator()() const {
-                        return math::random(min, max);
-                    };
-                } interval;
-                struct {
-                    int min{0};
-                    int max{0};
-                    int operator()() const {
-                        return math::random(min, max);
-                    };
-                } decrease_interval;
+                MIDI::Range interval{MIDI::SIXTEENTH, MIDI::EIGHTH};
+                MIDI::Range decrease_interval{0, 0};
             } repeat;
         };
         inline static void stutter(smf::MidiFile &file,
