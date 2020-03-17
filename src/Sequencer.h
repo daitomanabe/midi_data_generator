@@ -298,8 +298,8 @@ namespace sequencer {
                 while(it != track_note.rend()) {
                     int new_from = (range.to - it->range.to) * p.bar_tick / range.duration();
                     int new_to = (range.to - it->range.from) * p.bar_tick / range.duration();
-                    std::cout << "rev: " << new_from << " " << new_to << std::endl;
-                    std::cout << "  rev: " << it->range.from << " " << it->range.to << std::endl;
+//                    std::cout << "rev: " << new_from << " " << new_to << std::endl;
+//                    std::cout << "  rev: " << it->range.from << " " << it->range.to << std::endl;
                     file.addNoteOn(track_id,
                                    p.elapsed_bar * p.bar_tick + new_from,
                                    it->channel,

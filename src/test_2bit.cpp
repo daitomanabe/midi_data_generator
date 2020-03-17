@@ -144,7 +144,10 @@ namespace test_2bit {
         smf::MidiFile file;
         file.setTPQ(120);
         int track_id = file.addTrack();
-        tidaloid::eval(file, track_id, "bd sd bd sd", {{"bd", MIDI::C_1}, {"sd", MIDI::E_1}});
+//        std::string tidal_seq = "[bd sd] x3 [bd [sd sd]], [hh x2 [ho hh] hh] x2";
+        std::string tidal_seq = "[bd sd] x3 [bd [sd sd]], [hh x2 [ho hh] hh] x2";
+        std::cout << tidaloid::parse(tidal_seq) << std::endl;
+        tidaloid::eval(file, track_id, tidal_seq, {{"bd", MIDI::C_1}, {"sd", MIDI::E_1}, {"hh", MIDI::Fs_1}, {"ho", MIDI::Gs_1}});
         
         smf::MidiFile perlin;
         perlin.setTPQ(120);
@@ -156,10 +159,11 @@ namespace test_2bit {
                                   16,
                                   MIDI::ONEMEASURE);
         
-        sequencer::MIDIFilePhrase phrase1{file, track_id, {0, perlin.getTPQ() * 4}};
+        sequencer::MIDIFilePhrase phrase1{file, track_id, {0, file.getTPQ() * 4}};
         sequencer::MIDIFilePhrase phrase2{perlin, perlin_track, {0, perlin.getTPQ() * 4}};
         
         sequencer::Sequence()
+            .play(sequencer::PlayMode::Linear(4), phrase1)
             .play(sequencer::PlayMode::Pingpong(4), phrase1)
             .play(sequencer::PlayMode::Pingpong(4), phrase2)
             .write(file, MIDI::Setting{track_id, MIDI::ONEMEASURE, 0});
