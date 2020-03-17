@@ -7,10 +7,13 @@
 //
 
 #include "test_2bit.hpp"
+
+#include "Effect.h"
 #include "Randomize.h"
 #include "Quantize.h"
 #include "Sequencer.h"
 #include "Tidaloid.h"
+#include "MidiFileUtils.h"
 
 namespace test_2bit {
     void test_sequencer(const std::string &exportDir) {
@@ -140,13 +143,28 @@ namespace test_2bit {
         output.write(exportDir + "basic_pingpon4.mid");
     }
     
+    void test_stutter_effect(std::string exportDir) {
+        smf::MidiFile file;
+        file.setTPQ(120);
+        int track_id = file.addTrack();
+        std::string tidal_seq = "[bd sd bd sd] x4, [hh x8] x4";
+        tidaloid::eval(file, tidal_seq, {{"bd", MIDI::C_1}, {"sd", MIDI::E_1}, {"hh", MIDI::Fs_1}, {"ho", MIDI::Gs_1}}, MIDI::Setting(track_id, MIDI::ONEMEASURE * 4, 0));
+        file.write(exportDir + "stutter_orig.mid");
+        MIDI::Effect::StutterParameter param;
+        param.div_ticks = file.getTPQ();
+        param.repeat.decrease_interval.min = 3;
+        param.repeat.decrease_interval.max = 8;
+        param.repeat.probability = 0.7f;
+        MIDI::Effect::stutter(file, track_id, param);
+        file.write(exportDir + "stuttered.mid");
+    }
+    
     void test_complex_pattern(std::string exportDir) {
         smf::MidiFile file;
         file.setTPQ(120);
         int track_id = file.addTrack();
 //        std::string tidal_seq = "[bd sd] x3 [bd [sd sd]], [hh x2 [ho hh] hh] x2";
         std::string tidal_seq = "[bd sd] x3 [bd [sd sd]], [hh x2 [ho hh] hh] x2";
-        std::cout << tidaloid::parse(tidal_seq) << std::endl;
         tidaloid::eval(file, track_id, tidal_seq, {{"bd", MIDI::C_1}, {"sd", MIDI::E_1}, {"hh", MIDI::Fs_1}, {"ho", MIDI::Gs_1}});
         
         smf::MidiFile perlin;
@@ -168,6 +186,8 @@ namespace test_2bit {
             .play(sequencer::PlayMode::Pingpong(4), phrase2)
             .write(file, MIDI::Setting{track_id, MIDI::ONEMEASURE, 0});
         
+        quantize::per_ticks(file, [](float v) { return std::pow(v, 0.7f); }, {MIDI::AllTrack, MIDI::QUARTER, 0});
+        
         file.write(exportDir + "complex.mid");
     }
     
@@ -182,6 +202,7 @@ namespace test_2bit {
 //        test_randomize(exportDir);
 //        test_phrase(exportDir);
 //        test_midi_phrase(importDir, exportDir);
+        test_stutter_effect(exportDir);
         test_complex_pattern(exportDir);
     }
 }
