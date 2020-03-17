@@ -16,6 +16,13 @@
 namespace MIDI {
     static constexpr int AllTrack = -1;
     struct Setting {
+        Setting() = default;
+        Setting(int track_id, int duration_in_ticks, int offset_in_ticks)
+        : track_id{track_id}
+        , duration_in_ticks{duration_in_ticks}
+        , offset_in_ticks{offset_in_ticks}
+        {};
+        
         int track_id{0};
         int duration_in_ticks{ONEMEASURE};
         int offset_in_ticks{0};
