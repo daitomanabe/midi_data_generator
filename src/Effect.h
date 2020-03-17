@@ -49,7 +49,9 @@ namespace MIDI {
             auto num_unit = max_note->range.to / p.div_ticks + 1;
             float max_tick = num_unit * p.div_ticks;
             std::vector<StructuredNotes::Note> playing_notes;
+        
             for(auto i = 0; i < num_unit; i++) {
+                std::cout << i << " / " << num_unit << std::endl;
                 int from = i * p.div_ticks,
                     to = (i + 1) * p.div_ticks;
                 if(math::random() < p.repeat.probability(i / max_tick)) {
@@ -128,7 +130,7 @@ namespace MIDI {
                                              playing_notes.end(),
                                              [to] (const StructuredNotes::Note &note)
                                              { return note.range.to <= to; });
-                    notes.erase(playing_notes.end(), it);
+                    playing_notes.erase(it, playing_notes.end());
                 }
             }
             file.sortTrack(track_id);

@@ -77,6 +77,14 @@ namespace MIDI {
         { return math::random(min, max); };
         inline int operator()() const
         { return random(); };
+        
+        Range &operator=(int x) {
+            min = max = x;
+            return *this;
+        };
+        
+        operator int() const
+        { return max; };
     };
     
     struct TickRange {
@@ -95,6 +103,14 @@ namespace MIDI {
         { return math::random(from, to); };
         inline int operator()() const
         { return random(); };
+        
+        TickRange &operator=(int x) {
+            from = to = x;
+            return *this;
+        };
+        
+        operator int() const
+        { return from; };
     };
 };
 
