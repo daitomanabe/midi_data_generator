@@ -188,6 +188,20 @@ namespace MIDI {
             dst_file[dst_track_id].append(e);
         }
     }
+                    
+    void convertTPQ(smf::MidiFile &file,
+                    int tpq)
+    {
+        float factor = (float)tpq / file.getTPQ();
+        for(auto track_id = 0; track_id < file.getTrackCount(); ++track_id) {
+            auto &events = file[track_id];
+            for(auto i = 0; i < events.size(); ++i) {
+                events[i].tick *= factor;
+            }
+        }
+        file.setTPQ(tpq);
+        file.sortTracks();
+    }
 };
 
 #endif /* MidiFileUtils_h */

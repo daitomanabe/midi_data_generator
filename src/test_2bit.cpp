@@ -157,6 +157,10 @@ namespace test_2bit {
         param.repeat.probability = 0.7f;
         MIDI::Effect::stutter(file, track_id, param);
         file.write(exportDir + "stuttered.mid");
+        
+        file.read(exportDir + "stutter_orig.mid");
+        MIDI::Effect::stutter_per_note(file, track_id, param);
+        file.write(exportDir + "stuttered_per_note.mid");
     }
     
     void test_complex_pattern(std::string exportDir) {
