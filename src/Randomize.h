@@ -201,10 +201,7 @@ namespace randomize {
             MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
             int time{0};
             int interval{MIDI::EIGHTH}; // in ticks
-            struct {
-                int min{0};
-                int max{0};
-            } decrease_interval;
+            MIDI::Range decrease_interval;
         } repeat;
     };
     
