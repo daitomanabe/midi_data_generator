@@ -177,10 +177,10 @@ namespace MIDI {
         int tpq;
     };
 
-    void mergeTracks(smf::MidiFile &src_file,
-                     int src_track_id,
-                     smf::MidiFile &dst_file,
-                     int dst_track_id)
+    inline static void mergeTrack(smf::MidiFile &src_file,
+                                  int src_track_id,
+                                  smf::MidiFile &dst_file,
+                                  int dst_track_id)
     {
         const auto &src_events = src_file[src_track_id];
         for(auto i = 0; i < src_events.size(); ++i) {
@@ -189,8 +189,8 @@ namespace MIDI {
         }
     }
                     
-    void convertTPQ(smf::MidiFile &file,
-                    int tpq)
+    inline static void convertTPQ(smf::MidiFile &file,
+                                  int tpq)
     {
         float factor = (float)tpq / file.getTPQ();
         for(auto track_id = 0; track_id < file.getTrackCount(); ++track_id) {
