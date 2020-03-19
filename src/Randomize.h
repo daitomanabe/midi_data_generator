@@ -202,9 +202,10 @@ namespace randomize {
             int time{0};
             int interval{MIDI::EIGHTH}; // in ticks
             MIDI::Range decrease_interval;
+            MIDI::Range minimum_duration{5, 5};
         } repeat;
         struct {
-            std::vector<u_int8_t> notes; // drunk target
+            std::vector<std::uint8_t> notes; // drunk target
             MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
             MIDI::Range range; // in_ticks drunk min max. can be negative value;
         } drunk;
@@ -216,36 +217,51 @@ namespace randomize {
     {
         int unit = setting.duration_in_ticks / setting.divisor;
         const auto &repeat = setting.repeat;
+        const auto &drunk = setting.drunk;
         float normalizer = 1.0f / setting.duration_in_ticks;
         for(auto i = 0; i < setting.divisor; ++i) {
             if(setting.dropout.probability(i * unit * normalizer) < math::random()) {
                 int position = setting.offset_in_ticks + i * unit;
                 float normalized_position = position * normalizer;
+                
                 int duration = repeat.interval;
+                
                 int n = notes.size() * math::random() * setting.random_note.probability(normalized_position);
                 int note = notes[n];
+                
+                bool do_drunk = std::find(drunk.notes.begin(),
+                                          drunk.notes.end(),
+                                          note) != drunk.notes.end()
+                                && drunk.probability(normalized_position);
+                if(do_drunk) {
+                    position += drunk.range();
+                    if(position < 0) position = 0;
+                    normalized_position = position * normalizer;
+                }
                 file.addNoteOn(setting.track_id,
                                position,
                                0,
                                note,
                                100);
                 file.addNoteOff(setting.track_id,
-                                position + duration,
+                                std::min(position + duration,
+                                         setting.offset_in_ticks + setting.duration_in_ticks),
                                 0,
                                 note);
                 if(0 < repeat.time && math::random() < repeat.probability(normalized_position))
                 {
-                    int repeat_decrease_interval = math::random(repeat.decrease_interval.min, repeat.decrease_interval.max);
+                    int repeat_decrease_interval = repeat.decrease_interval();
                     position += duration;
+                    int minimum_duration = repeat.minimum_duration();
                     for(auto r = 0; r < setting.repeat.time; ++r) {
                         duration -= repeat_decrease_interval;
+                        if(duration < minimum_duration) duration = minimum_duration;
                         if(setting.duration_in_ticks < position + duration - setting.offset_in_ticks) break;
                         file.addNoteOn(setting.track_id,
                                        position,
                                        0,
                                        note,
                                        100);
-                        if(duration < 0) duration = 1;
                         file.addNoteOff(setting.track_id,
                                         position + duration,
                                         0,
