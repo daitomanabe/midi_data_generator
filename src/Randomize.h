@@ -203,6 +203,11 @@ namespace randomize {
             int interval{MIDI::EIGHTH}; // in ticks
             MIDI::Range decrease_interval;
         } repeat;
+        struct {
+            std::vector<u_int8_t> notes; // drunk target
+            MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
+            MIDI::Range range; // in_ticks drunk min max. can be negative value;
+        } drunk;
     };
     
     inline static void make_phrase(smf::MidiFile &file,
