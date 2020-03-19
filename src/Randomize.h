@@ -256,7 +256,8 @@ namespace randomize {
                 }
             }
         }
-    }
+        file.sortTracks();
+    } // make_phrase
 };
 
 #endif /* Randomize_h */
