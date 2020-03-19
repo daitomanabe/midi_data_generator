@@ -222,7 +222,7 @@ namespace tidaloid {
                 current = command::create(command_type::group);
                 prev_command.reset();
                 group->add_layer(current);
-            } else if(c[0] == 'x' || c[0] == 'X' || std::all_of(c.begin() + 1, c.end(), [](int c) { return std::isdigit(c); })) {
+            } else if((c[0] == 'x' || c[0] == 'X') && std::all_of(c.begin() + 1, c.end(), [](int c) { return std::isdigit(c); })) {
                 auto num = std::stoi(std::string{c.begin() + 1, c.end()});
                 if(!prev_command) {
                     std::cerr << ("illegal '" + c + "' command") << std::endl;
