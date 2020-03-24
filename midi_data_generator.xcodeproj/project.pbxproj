@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A2048CC24135E930053DC6A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A2047F624135E920053DC6A /* main.cpp */; };
+		0A76B46F24243BB00073574E /* test_daito.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A76B46E24243BB00073574E /* test_daito.cpp */; };
 		955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 955BEDA22417EC1600532931 /* test_2bit.cpp */; };
 		955BEDB3241A9E6700532931 /* SimplexNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 955BEDB2241A9E6700532931 /* SimplexNoise.cpp */; };
 		95A3A04B2413989F00F599C3 /* libmidifile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A3A0492413989F00F599C3 /* libmidifile.a */; };
@@ -29,7 +30,12 @@
 		0A2047F624135E920053DC6A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0A2048A824135E930053DC6A /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
 		0A20492A24135EFA0053DC6A /* midi_data_generator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = midi_data_generator; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A76B46D24243BAF0073574E /* test_daito.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = test_daito.hpp; sourceTree = "<group>"; };
+		0A76B46E24243BB00073574E /* test_daito.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_daito.cpp; sourceTree = "<group>"; };
+		0A76B4702425B1770073574E /* LiveConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiveConstants.h; sourceTree = "<group>"; };
 		0ABF5A312416070600CC22B1 /* MathConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathConstants.h; sourceTree = "<group>"; };
+		0AD348B4242A2685003A1C3F /* Velocity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Velocity.h; sourceTree = "<group>"; };
+		0AD348B5242A26F4003A1C3F /* Control.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Control.h; sourceTree = "<group>"; };
 		955BED9F24167A6000532931 /* MathUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		955BEDA024178F6900532931 /* Randomize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Randomize.h; sourceTree = "<group>"; };
 		955BEDA12417EB3500532931 /* Quantize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Quantize.h; sourceTree = "<group>"; };
@@ -79,6 +85,7 @@
 			children = (
 				0A2047F624135E920053DC6A /* main.cpp */,
 				955BEDA7241A3D9200532931 /* MidiConstants.h */,
+				0A76B4702425B1770073574E /* LiveConstants.h */,
 				955BEDB4241AA37100532931 /* MidiSetting.h */,
 				955BEDB52420CFA300532931 /* MidiFileUtils.h */,
 				955BEDA6241A3CFD00532931 /* Oscillator.h */,
@@ -91,6 +98,10 @@
 				955BEDA32417EC1600532931 /* test_2bit.hpp */,
 				955BEDA52419447700532931 /* Sequencer.h */,
 				955BEDA8241A4E3000532931 /* Tidaloid.h */,
+				0A76B46E24243BB00073574E /* test_daito.cpp */,
+				0A76B46D24243BAF0073574E /* test_daito.hpp */,
+				0AD348B4242A2685003A1C3F /* Velocity.h */,
+				0AD348B5242A26F4003A1C3F /* Control.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -236,6 +247,7 @@
 				955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */,
 				955BEDB3241A9E6700532931 /* SimplexNoise.cpp in Sources */,
 				0A2048CC24135E930053DC6A /* main.cpp in Sources */,
+				0A76B46F24243BB00073574E /* test_daito.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

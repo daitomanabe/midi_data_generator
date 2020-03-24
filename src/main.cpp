@@ -6,13 +6,17 @@
 //
 
 #include "test_2bit.hpp"
+#include "test_daito.hpp"
+
 #include <iostream>
 #include <random>
 #include <cstdlib>
 #include <unistd.h>
 
 int main(int argc, char** argv) {
-    test_2bit::test();
+//    test_2bit::test();
+    test_daito::test();
+
     return 0;
 }
 

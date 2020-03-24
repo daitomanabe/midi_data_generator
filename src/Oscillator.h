@@ -23,7 +23,6 @@ namespace oscillator{
         // add 0.5 to time for starting from zero value.
         return (std::cos(TWO_PI * (t + 0.5) * freq + phase) + 1.) * 0.5;
     }
-    //train~
     //WIP
     inline float train(float t, float freq, float duty_ratio, float phase){
         return (std::fmod(t, 1.0f/ freq) < duty_ratio / freq) ? 0.f : 1.0f;

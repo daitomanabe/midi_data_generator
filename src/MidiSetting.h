@@ -37,7 +37,11 @@ namespace MIDI {
         Probability(float v)
         : value{[v](float){ return v; }}
         {};
-        
+
+        Probability(double v)
+        : value{[v](double){ return v; }}
+        {};
+
         Probability(std::function<float(float)> v)
         : value{v}
         {};
@@ -51,7 +55,7 @@ namespace MIDI {
             value = Probability{std::forward<type>(v)}.value;
             return *this;
         }
-        
+
         operator float() const
         { return value(0.0f); };
         
