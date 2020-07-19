@@ -14,16 +14,19 @@
 
 #include "MathConstants.h"
 #include "MathUtils.h"
+#include "Oscillator.h"
+#include "Velocity.h"
 
 #include "MidiFile.h"
 #include "SimplexNoise.h"
+#include "LiveConstants.h"
 
 #include <set>
 #include <map>
 #include <vector>
 #include <algorithm>
 #include <iostream>
-
+#include <unordered_map>
 #include <cstddef>
 #include <cstdint>
 
@@ -189,8 +192,10 @@ namespace randomize {
         file.sortTracks();
     }
     
+
     struct PhraseStuttingSetting : MIDI::Setting {
         int divisor{16};
+        int note_duration = MIDI::SIXTEENTH;
         struct {
             MIDI::Probability probability{1.0f}; // 0.0f - 1.0f
         } random_note;
@@ -199,8 +204,11 @@ namespace randomize {
         } dropout;
         struct {
             MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
-            int time{0};
+//            int time{0};
+            MIDI::Range time{0,0};
+            int note_duration = MIDI::SIXTEENTH;
             int interval{MIDI::EIGHTH}; // in ticks
+            std::vector<int> intervals;
             MIDI::Range decrease_interval;
             MIDI::Range minimum_duration{5, 5};
         } repeat;
@@ -209,66 +217,318 @@ namespace randomize {
             MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
             MIDI::Range range; // in_ticks drunk min max. can be negative value;
         } drunk;
+
     };
-    
+
+struct note_with_detail{
+    int note;
+    struct {
+        MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
+    } dropout;
+    struct {
+        MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
+//            int time{0};
+        MIDI::Range time{0,0};
+        int note_duration = MIDI::SIXTEENTH;
+        int interval{MIDI::EIGHTH}; // in ticks
+        std::vector<int> intervals;
+        MIDI::Range decrease_interval;
+        MIDI::Range minimum_duration{5, 5};
+    } repeat;
+    struct {
+        std::vector<std::uint8_t> notes; // drunk target
+        MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
+        MIDI::Range range; // in_ticks drunk min max. can be negative value;
+    } drunk;
+
+};
+    struct DetailSetting : MIDI::Setting {
+        int divisor{16};
+        int note_duration{MIDI::SIXTEENTH};
+        std::vector<note_with_detail> notes;
+    };
+    inline static void make_phrase_with_detail(smf::MidiFile &file,
+                                               const DetailSetting & setting){
+        int unit = setting.duration_in_ticks / setting.divisor;
+        for(auto &a: setting.notes){
+            const auto & repeat = a.repeat;
+            const auto & drunk = a.drunk;
+            const auto & dropout = a.dropout;
+            float normalizer = 1.0f / setting.duration_in_ticks;
+
+            // repeat divisor times
+            for(auto i = 0; i < setting.divisor; ++i) {
+                //drop out
+                if(dropout.probability(i * unit * normalizer) < math::random()) {
+                    int position = setting.offset_in_ticks + i * unit;
+                    float normalized_position = position * normalizer;
+                    int note = a.note;
+                    
+                    bool do_drunk = std::find(drunk.notes.begin(),
+                                              drunk.notes.end(),
+                                              note) != drunk.notes.end()
+                                    && drunk.probability(normalized_position);
+                    
+                    // drunk
+                    if(do_drunk) {
+                        position += drunk.range();
+                        if(position < 0) position = 0;
+                        normalized_position = position * normalizer;
+                    }
+                    
+
+                    int velocity = 127 ;
+                    
+
+                    file.addNoteOn(setting.track_id,
+                                   position,
+                                   0,
+                                   note,
+                                   velocity);
+                    file.addNoteOff(setting.track_id,
+                                    std::min(position + setting.note_duration,
+                                             setting.offset_in_ticks + setting.duration_in_ticks),
+                                    0,
+                                    note);
+                    
+                    if(0 < repeat.time.random() && math::random() < repeat.probability(normalized_position))
+                    {
+                        
+                        //repeat interval
+                        int repeat_duration;
+                        if(repeat.intervals.size() == 0){
+                            repeat_duration = repeat.interval;
+                        }else{
+                            // select interval from intervals randomly
+                            int ik = repeat.intervals.size() * math::random() ;
+                            repeat_duration = repeat.intervals[ik];
+                        }
+                        position += repeat_duration;
+
+                        int repeat_decrease_interval = repeat.decrease_interval();
+                        int minimum_duration = repeat.minimum_duration();
+                        
+                        // repeat
+                        for(auto r = 0; r < repeat.time.random(); ++r) {
+                            repeat_duration -= repeat_decrease_interval;
+                            if(repeat_duration < minimum_duration) repeat_duration = minimum_duration;
+                            if(setting.duration_in_ticks < position + repeat_duration - setting.offset_in_ticks) break;
+                            file.addNoteOn(setting.track_id,
+                                           position,
+                                           0,
+                                           note,
+                                           velocity);
+                            file.addNoteOff(setting.track_id,
+                                            position + repeat_duration,
+                                            0,
+                                            note);
+                            position += repeat_duration;
+                        }
+    //                    i = (position - setting.offset_in_ticks) / unit;
+                    }
+                }
+            }
+        }
+        
+        
+    }
+
     inline static void make_phrase(smf::MidiFile &file,
                                    const std::vector<int> &notes,
-                                   const PhraseStuttingSetting &setting)
+                                   const PhraseStuttingSetting &setting,
+                                   bool notes_in_order = false,
+                                   bool repeat_random = true)
     {
         int unit = setting.duration_in_ticks / setting.divisor;
         const auto &repeat = setting.repeat;
         const auto &drunk = setting.drunk;
         float normalizer = 1.0f / setting.duration_in_ticks;
+        
+        int counter_note = 0;
+        // repeat divisor times
         for(auto i = 0; i < setting.divisor; ++i) {
+            //drop out
             if(setting.dropout.probability(i * unit * normalizer) < math::random()) {
                 int position = setting.offset_in_ticks + i * unit;
                 float normalized_position = position * normalizer;
-                
-                int duration = repeat.interval;
-                
-                int n = notes.size() * math::random() * setting.random_note.probability(normalized_position);
-                int note = notes[n];
+                int note;
+                if(notes_in_order){
+                    int n = counter_note % notes.size();
+                    note = notes[n];
+                    counter_note++;
+                }
+                else{
+                    int n = notes.size() * math::random() * setting.random_note.probability(normalized_position);
+                    note = notes[n];
+                }
                 
                 bool do_drunk = std::find(drunk.notes.begin(),
                                           drunk.notes.end(),
                                           note) != drunk.notes.end()
                                 && drunk.probability(normalized_position);
+                
+                // drunk
                 if(do_drunk) {
                     position += drunk.range();
                     if(position < 0) position = 0;
                     normalized_position = position * normalizer;
                 }
+                
+
+                int velocity = 127 ;
+                
+
                 file.addNoteOn(setting.track_id,
                                position,
                                0,
                                note,
-                               100);
+                               velocity);
                 file.addNoteOff(setting.track_id,
-                                std::min(position + duration,
+                                std::min(position + setting.note_duration,
                                          setting.offset_in_ticks + setting.duration_in_ticks),
                                 0,
                                 note);
-                if(0 < repeat.time && math::random() < repeat.probability(normalized_position))
+                
+                if(0 < repeat.time.random() && math::random() < repeat.probability(normalized_position))
                 {
+                    
+                    //repeat interval
+                    int repeat_duration;
+                    if(repeat.intervals.size() == 0){
+                        repeat_duration = repeat.interval;
+                    }else{
+                        // select interval from intervals randomly
+                        int ik = repeat.intervals.size() * math::random() ;
+                        repeat_duration = repeat.intervals[ik];
+                    }
+                    position += repeat_duration;
+
                     int repeat_decrease_interval = repeat.decrease_interval();
-                    position += duration;
                     int minimum_duration = repeat.minimum_duration();
-                    for(auto r = 0; r < setting.repeat.time; ++r) {
-                        duration -= repeat_decrease_interval;
-                        if(duration < minimum_duration) duration = minimum_duration;
-                        if(setting.duration_in_ticks < position + duration - setting.offset_in_ticks) break;
+                    
+                    // repeat
+                    for(auto r = 0; r < setting.repeat.time.random(); ++r) {
+                        repeat_duration -= repeat_decrease_interval;
+                        if(repeat_duration < minimum_duration) repeat_duration = minimum_duration;
+                        if(setting.duration_in_ticks < position + repeat_duration - setting.offset_in_ticks) break;
                         file.addNoteOn(setting.track_id,
                                        position,
                                        0,
                                        note,
-                                       100);
+                                       velocity);
                         file.addNoteOff(setting.track_id,
-                                        position + duration,
+                                        position + repeat_duration,
                                         0,
                                         note);
-                        position += duration;
+                        position += repeat_duration;
                     }
-                    i = (position - setting.offset_in_ticks) / unit;
+//                    i = (position - setting.offset_in_ticks) / unit;
+                }
+            }
+        }
+        file.sortTracks();
+    } // make_phrase
+    // velocity function
+    using vel_func = std::function<float(float)>;
+
+    inline static void make_phrase_with_velocity(smf::MidiFile &file,
+                                   const std::vector<int> &notes,
+                                   const std::unordered_map<int, vel_func> & vel_func_map,
+                                   const PhraseStuttingSetting &setting,
+                                   bool notes_in_order = false,
+                                   bool repeat_random = true)
+    {
+        int unit = setting.duration_in_ticks / setting.divisor;
+        const auto &repeat = setting.repeat;
+        const auto &drunk = setting.drunk;
+        float normalizer = 1.0f / setting.duration_in_ticks;
+        
+        int counter_note = 0;
+        // repeat divisor times
+        for(auto i = 0; i < setting.divisor; ++i) {
+            //drop out
+            if(setting.dropout.probability(i * unit * normalizer) < math::random()) {
+                int position = setting.offset_in_ticks + i * unit;
+                float normalized_position = position * normalizer;
+                int note;
+                if(notes_in_order){
+                    int n = counter_note % notes.size();
+                    note = notes[n];
+                    counter_note++;
+                }
+                else{
+                    int n = notes.size() * math::random() * setting.random_note.probability(normalized_position);
+                    note = notes[n];
+                }
+                
+                bool do_drunk = std::find(drunk.notes.begin(),
+                                          drunk.notes.end(),
+                                          note) != drunk.notes.end()
+                                && drunk.probability(normalized_position);
+                
+                // drunk
+                if(do_drunk) {
+                    position += drunk.range();
+                    if(position < 0) position = 0;
+                    normalized_position = position * normalizer;
+                }
+                
+                //velocity
+                float t = normalized_position;
+                int velocity;
+                for(auto &nt : notes){
+                    if(vel_func_map.find(nt) != vel_func_map.end()){
+                        float tmpv = vel_func_map.at(nt)(t);
+                        velocity = 127 * math::map(tmpv, 0, 1., 0.8, 1.0);
+                    }
+                }
+                
+
+                file.addNoteOn(setting.track_id,
+                               position,
+                               0,
+                               note,
+                               velocity);
+                file.addNoteOff(setting.track_id,
+                                std::min(position + setting.note_duration,
+                                         setting.offset_in_ticks + setting.duration_in_ticks),
+                                0,
+                                note);
+                
+                if(0 < repeat.time.random() && math::random() < repeat.probability(normalized_position))
+                {
+                    
+                    //repeat interval
+                    int repeat_duration;
+                    if(repeat.intervals.size() == 0){
+                        repeat_duration = repeat.interval;
+                    }else{
+                        // select interval from intervals randomly
+                        int ik = repeat.intervals.size() * math::random() ;
+                        repeat_duration = repeat.intervals[ik];
+                    }
+                    position += repeat_duration;
+
+                    int repeat_decrease_interval = repeat.decrease_interval();
+                    int minimum_duration = repeat.minimum_duration();
+                    
+                    // repeat
+                    for(auto r = 0; r < setting.repeat.time.random(); ++r) {
+                        repeat_duration -= repeat_decrease_interval;
+                        if(repeat_duration < minimum_duration) repeat_duration = minimum_duration;
+                        if(setting.duration_in_ticks < position + repeat_duration - setting.offset_in_ticks) break;
+                        file.addNoteOn(setting.track_id,
+                                       position,
+                                       0,
+                                       note,
+                                       velocity);
+                        file.addNoteOff(setting.track_id,
+                                        position + repeat_duration,
+                                        0,
+                                        note);
+                        position += repeat_duration;
+                    }
+//                    i = (position - setting.offset_in_ticks) / unit;
                 }
             }
         }

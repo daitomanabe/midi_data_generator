@@ -34,7 +34,7 @@
 		0A76B46E24243BB00073574E /* test_daito.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_daito.cpp; sourceTree = "<group>"; };
 		0A76B4702425B1770073574E /* LiveConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiveConstants.h; sourceTree = "<group>"; };
 		0ABF5A312416070600CC22B1 /* MathConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathConstants.h; sourceTree = "<group>"; };
-		0AD348B4242A2685003A1C3F /* Velocity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Velocity.h; sourceTree = "<group>"; };
+		0AC8888724BA86FF000D729B /* Velocity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Velocity.h; sourceTree = "<group>"; };
 		0AD348B5242A26F4003A1C3F /* Control.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Control.h; sourceTree = "<group>"; };
 		955BED9F24167A6000532931 /* MathUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		955BEDA024178F6900532931 /* Randomize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Randomize.h; sourceTree = "<group>"; };
@@ -83,6 +83,7 @@
 		0A2047F524135E920053DC6A /* src */ = {
 			isa = PBXGroup;
 			children = (
+				0AC8888724BA86FF000D729B /* Velocity.h */,
 				0A2047F624135E920053DC6A /* main.cpp */,
 				955BEDA7241A3D9200532931 /* MidiConstants.h */,
 				0A76B4702425B1770073574E /* LiveConstants.h */,
@@ -100,7 +101,6 @@
 				955BEDA8241A4E3000532931 /* Tidaloid.h */,
 				0A76B46E24243BB00073574E /* test_daito.cpp */,
 				0A76B46D24243BAF0073574E /* test_daito.hpp */,
-				0AD348B4242A2685003A1C3F /* Velocity.h */,
 				0AD348B5242A26F4003A1C3F /* Control.h */,
 			);
 			path = src;

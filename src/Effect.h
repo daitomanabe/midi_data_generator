@@ -38,13 +38,11 @@ namespace MIDI {
         {
             if(track_id == MIDI::AllTrack) {
                 for(auto i = 0; i < file.getNumTracks(); ++i) {
-                    std::cout << "tarck " << i << " will start" << std::endl;
                     stutter(file, i, p);
                 }
                 return;
             }
             if(file.getNumEvents(track_id) == 0) {
-                std::cout << "empty track: " << track_id << std::endl;
                 return;
             }
             StructuredNotes tracked_notes{file};
@@ -63,7 +61,7 @@ namespace MIDI {
             std::vector<StructuredNotes::Note> playing_notes;
         
             for(auto i = 0; i < num_unit; i++) {
-                std::cout << i << " / " << num_unit << std::endl;
+//                std::cout << i << " / " << num_unit << std::endl;
                 int from = i * p.div_ticks,
                     to = (i + 1) * p.div_ticks;
                 if(math::random() < p.repeat.probability(i / max_tick)) {
@@ -155,13 +153,13 @@ namespace MIDI {
         {
             if(track_id == MIDI::AllTrack) {
                 for(auto i = 0; i < file.getNumTracks(); ++i) {
-                    std::cout << "tarck " << i << " will start" << std::endl;
+//                    std::cout << "tarck " << i << " will start" << std::endl;
                     stutter(file, i, p);
                 }
                 return;
             }
             if(file.getNumEvents(track_id) == 0) {
-                std::cout << "empty track: " << track_id << std::endl;
+//                std::cout << "empty track: " << track_id << std::endl;
                 return;
             }
             StructuredNotes tracked_notes{file};

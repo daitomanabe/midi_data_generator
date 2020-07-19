@@ -13,6 +13,7 @@
 #include <cstdint>
 
 namespace LIVE {
+    static constexpr std::uint8_t MUTE = 0;
     static constexpr std::uint8_t KICK = 36;
     static constexpr std::uint8_t RIM = 37;
     static constexpr std::uint8_t SNARE = 38;

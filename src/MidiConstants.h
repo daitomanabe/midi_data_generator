@@ -30,7 +30,12 @@ namespace MIDI {
     static constexpr int EIGHTH       = 60;
     static constexpr int SIXTEENTH    = 30;
     static constexpr int THIRTYSECOND = 15;
-    
+    static constexpr int TRIPLETS       = 160;
+    static constexpr int SIXTH       = 80;
+    static constexpr int NINETH       = 53;
+    static constexpr int TWELVETH       = 40;
+    static constexpr int TWENTYFOURTH       = 20;
+
     static constexpr std::uint8_t C_m2 = 0;
     static constexpr std::uint8_t Db_m2 = 1;
     static constexpr std::uint8_t Cs_m2 = 1;

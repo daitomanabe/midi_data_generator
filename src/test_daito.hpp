@@ -12,7 +12,11 @@
 #include <stdio.h>
 namespace test_daito {
     void test();
-    
+    void test2();
+    void test3();
+    void test4();
+void test5();
+
 }
 
 #endif /* test_daito_hpp */

@@ -28,11 +28,11 @@ namespace velocity {
             MIDI::Range range;
         } drunk;
     };
-    void make_velocity_envelope(smf::MidiFile &file,
-                             const std::vector<int> &notes,
-                            const VelocityEnvelopeSetting &ves){
-        
-    }
+//    void make_velocity_envelope(smf::MidiFile &file,
+//                             const std::vector<int> &notes,
+//                            const VelocityEnvelopeSetting &ves){
+//        
+//    }
 
 };
 #endif /* Velocity_h */

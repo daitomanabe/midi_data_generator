@@ -22,3 +22,5 @@ sequence
 
 SongはSequenceの組み合わせ、パターンで作られる
 
+追加したい物
+FunctionでVelocity, Control Valueを変化

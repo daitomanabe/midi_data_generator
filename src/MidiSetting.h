@@ -11,7 +11,6 @@
 
 #include "MidiConstants.h"
 #include "MathUtils.h"
-
 #include <functional>
 
 namespace MIDI {
@@ -116,6 +115,53 @@ namespace MIDI {
         operator int() const
         { return from; };
     };
+struct Choice {
+    std::vector<int> choices;
+    Choice() = default;
+    Choice(const Choice &) = default;
+    Choice(const std::vector<int> cs)
+    : choices{cs}
+    {};
+    
+    Choice &operator=(const Choice &) = default;
+    
+//    int min;
+//    int max;
+    int random() const
+    {
+        if(choices.size()==0){
+            return -1;
+        }
+        else{
+            int k = math::random(0, choices.size()-1);
+            return choices[k];
+        }
+    }
+    inline int operator()() const
+    { return random(); };
+    
+    Choice &operator=(int x) {
+        choices.clear();
+        choices.emplace_back(x);
+        return *this;
+    };
+    void push_back(int a){
+        choices.emplace_back(a);
+    }
+    void operator <<(int k){
+        choices.emplace_back(k);
+    }
+    operator int() const
+    {
+        if(choices.size()==0){
+            return -1;
+        }
+        else{
+            return choices[0];
+        }
+    };
+};
+
 };
 
 #endif /* MidiFileSetting_h */
