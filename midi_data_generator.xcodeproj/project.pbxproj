@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0A2048CC24135E930053DC6A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A2047F624135E920053DC6A /* main.cpp */; };
 		0A76B46F24243BB00073574E /* test_daito.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A76B46E24243BB00073574E /* test_daito.cpp */; };
+		0A9F80CF24CAEFFA00F3C792 /* OFUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F80CD24CAEFFA00F3C792 /* OFUtils.cpp */; };
+		0AF0D19324C48E24002C8D9D /* test_daito_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AF0D19124C48E24002C8D9D /* test_daito_2.cpp */; };
 		955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 955BEDA22417EC1600532931 /* test_2bit.cpp */; };
 		955BEDB3241A9E6700532931 /* SimplexNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 955BEDB2241A9E6700532931 /* SimplexNoise.cpp */; };
 		95A3A04B2413989F00F599C3 /* libmidifile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A3A0492413989F00F599C3 /* libmidifile.a */; };
@@ -33,9 +35,13 @@
 		0A76B46D24243BAF0073574E /* test_daito.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = test_daito.hpp; sourceTree = "<group>"; };
 		0A76B46E24243BB00073574E /* test_daito.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_daito.cpp; sourceTree = "<group>"; };
 		0A76B4702425B1770073574E /* LiveConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiveConstants.h; sourceTree = "<group>"; };
+		0A9F80CD24CAEFFA00F3C792 /* OFUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OFUtils.cpp; sourceTree = "<group>"; };
+		0A9F80CE24CAEFFA00F3C792 /* OFUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OFUtils.hpp; sourceTree = "<group>"; };
 		0ABF5A312416070600CC22B1 /* MathConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathConstants.h; sourceTree = "<group>"; };
 		0AC8888724BA86FF000D729B /* Velocity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Velocity.h; sourceTree = "<group>"; };
 		0AD348B5242A26F4003A1C3F /* Control.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Control.h; sourceTree = "<group>"; };
+		0AF0D19124C48E24002C8D9D /* test_daito_2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_daito_2.cpp; sourceTree = "<group>"; };
+		0AF0D19224C48E24002C8D9D /* test_daito_2.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = test_daito_2.hpp; sourceTree = "<group>"; };
 		955BED9F24167A6000532931 /* MathUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		955BEDA024178F6900532931 /* Randomize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Randomize.h; sourceTree = "<group>"; };
 		955BEDA12417EB3500532931 /* Quantize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Quantize.h; sourceTree = "<group>"; };
@@ -102,6 +108,10 @@
 				0A76B46E24243BB00073574E /* test_daito.cpp */,
 				0A76B46D24243BAF0073574E /* test_daito.hpp */,
 				0AD348B5242A26F4003A1C3F /* Control.h */,
+				0AF0D19124C48E24002C8D9D /* test_daito_2.cpp */,
+				0AF0D19224C48E24002C8D9D /* test_daito_2.hpp */,
+				0A9F80CD24CAEFFA00F3C792 /* OFUtils.cpp */,
+				0A9F80CE24CAEFFA00F3C792 /* OFUtils.hpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -246,7 +256,9 @@
 			files = (
 				955BEDA42417EC1600532931 /* test_2bit.cpp in Sources */,
 				955BEDB3241A9E6700532931 /* SimplexNoise.cpp in Sources */,
+				0AF0D19324C48E24002C8D9D /* test_daito_2.cpp in Sources */,
 				0A2048CC24135E930053DC6A /* main.cpp in Sources */,
+				0A9F80CF24CAEFFA00F3C792 /* OFUtils.cpp in Sources */,
 				0A76B46F24243BB00073574E /* test_daito.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -381,7 +393,11 @@
 					"${SRCROOT}/libs/Choreograph/**",
 					"${SRCROOT}/libs/midifile/include",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs/midifile/lib";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/libs/midifile/lib",
+					"$(PROJECT_DIR)/libs/boost/lib/osx",
+					"$(PROJECT_DIR)/libs/boost/lib/emscripten",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -396,7 +412,11 @@
 					"${SRCROOT}/libs/Choreograph/**",
 					"${SRCROOT}/libs/midifile/include",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs/midifile/lib";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/libs/midifile/lib",
+					"$(PROJECT_DIR)/libs/boost/lib/osx",
+					"$(PROJECT_DIR)/libs/boost/lib/emscripten",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

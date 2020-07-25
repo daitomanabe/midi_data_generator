@@ -18,6 +18,7 @@
 #include "Oscillator.h"
 //#include <unordered_map>
 
+
 using namespace std;
 
 namespace test_daito {
@@ -1077,6 +1078,8 @@ void test5(){
          file.write(exportDir + name);
 
     }
+void test6(){
+}
     void test(){
                 std::string homeDir = getenv("HOME");
                 std::string exportDir = homeDir + "/development/export/daito/";

@@ -7,6 +7,8 @@
 
 #include "test_2bit.hpp"
 #include "test_daito.hpp"
+#include "test_daito_2.hpp"
+
 #include "Oscillator.h"
 #include <iostream>
 #include <random>
@@ -15,7 +17,10 @@
 
 int main(int argc, char** argv) {
 //    test_2bit::test();
-    test_daito::test4();
+//    for(int i=0;i<1;i++){
+//        test_daito::test11_stutter(i);
+//    }
+    test_daito::test12_complex();
     return 0;
 }
 

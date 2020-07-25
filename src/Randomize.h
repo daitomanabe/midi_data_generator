@@ -220,8 +220,8 @@ namespace randomize {
 
     };
 
-struct note_with_detail{
-    int note;
+struct detailed_note{
+    MIDI::Choice note;
     struct {
         MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
     } dropout;
@@ -230,25 +230,23 @@ struct note_with_detail{
 //            int time{0};
         MIDI::Range time{0,0};
         int note_duration = MIDI::SIXTEENTH;
-        int interval{MIDI::EIGHTH}; // in ticks
         std::vector<int> intervals;
         MIDI::Range decrease_interval;
         MIDI::Range minimum_duration{5, 5};
     } repeat;
     struct {
-        std::vector<std::uint8_t> notes; // drunk target
         MIDI::Probability probability{0.0f}; // 0.0f - 1.0f
         MIDI::Range range; // in_ticks drunk min max. can be negative value;
     } drunk;
 
 };
-    struct DetailSetting : MIDI::Setting {
+    struct DetailedSetting : MIDI::Setting {
         int divisor{16};
         int note_duration{MIDI::SIXTEENTH};
-        std::vector<note_with_detail> notes;
+        std::vector<detailed_note> notes;
     };
     inline static void make_phrase_with_detail(smf::MidiFile &file,
-                                               const DetailSetting & setting){
+                                               const DetailedSetting & setting){
         int unit = setting.duration_in_ticks / setting.divisor;
         for(auto &a: setting.notes){
             const auto & repeat = a.repeat;
@@ -262,19 +260,11 @@ struct note_with_detail{
                 if(dropout.probability(i * unit * normalizer) < math::random()) {
                     int position = setting.offset_in_ticks + i * unit;
                     float normalized_position = position * normalizer;
-                    int note = a.note;
+                    int note = a.note();
                     
-                    bool do_drunk = std::find(drunk.notes.begin(),
-                                              drunk.notes.end(),
-                                              note) != drunk.notes.end()
-                                    && drunk.probability(normalized_position);
-                    
-                    // drunk
-                    if(do_drunk) {
-                        position += drunk.range();
-                        if(position < 0) position = 0;
-                        normalized_position = position * normalizer;
-                    }
+                    position += drunk.range();
+                    if(position < 0) position = 0;
+                    normalized_position = position * normalizer;
                     
 
                     int velocity = 127 ;
@@ -291,18 +281,13 @@ struct note_with_detail{
                                     0,
                                     note);
                     
-                    if(0 < repeat.time.random() && math::random() < repeat.probability(normalized_position))
+                    if(0 < repeat.time.random() && math::random() < repeat.probability(normalized_position)
+                       && repeat.intervals.size() > 0)
                     {
                         
                         //repeat interval
-                        int repeat_duration;
-                        if(repeat.intervals.size() == 0){
-                            repeat_duration = repeat.interval;
-                        }else{
-                            // select interval from intervals randomly
-                            int ik = repeat.intervals.size() * math::random() ;
-                            repeat_duration = repeat.intervals[ik];
-                        }
+                        int ik = repeat.intervals.size() * math::random() ;
+                        int repeat_duration = repeat.intervals[ik];
                         position += repeat_duration;
 
                         int repeat_decrease_interval = repeat.decrease_interval();
@@ -475,7 +460,7 @@ struct note_with_detail{
                 
                 //velocity
                 float t = normalized_position;
-                int velocity;
+                int velocity = 0;
                 for(auto &nt : notes){
                     if(vel_func_map.find(nt) != vel_func_map.end()){
                         float tmpv = vel_func_map.at(nt)(t);

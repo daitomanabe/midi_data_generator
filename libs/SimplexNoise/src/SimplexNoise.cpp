@@ -26,8 +26,8 @@
 
 #include "SimplexNoise.h"
 
-#include <cstdint>  // int32_t/uint8_t
-
+//#include <cstdint>  // int32_t/uint8_t
+#include <stdint.h>
 /**
  * Computes the largest integer value not greater than the float one
  *

@@ -8,14 +8,17 @@
 
 #ifndef test_daito_hpp
 #define test_daito_hpp
-
+#include "Quantize.h"
 #include <stdio.h>
+#include "Oscillator.h"
+
 namespace test_daito {
     void test();
     void test2();
     void test3();
     void test4();
-void test5();
+    void test5();
+void test6();
 
 }
 

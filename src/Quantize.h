@@ -33,7 +33,7 @@ namespace quantize {
     \param unit_ticks default: 480 == ONEMEASURE
     \param track_id default: -1, if negative number is given, then process for all tracks
     */
-    void per_ticks(smf::MidiFile &file,
+    static void per_ticks(smf::MidiFile &file,
                    std::function<float(float)> curve,
                    std::size_t unit_ticks = MIDI::ONEMEASURE,
                    int track_id = -1)
@@ -57,7 +57,7 @@ namespace quantize {
         file.sortTrack(track_id);
     }
     
-    void per_ticks(smf::MidiFile &file,
+    static void per_ticks(smf::MidiFile &file,
                    std::function<float(float)> curve,
                    MIDI::Setting setting = {MIDI::AllTrack, MIDI::ONEMEASURE, 0})
     {

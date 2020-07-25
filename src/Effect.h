@@ -30,6 +30,7 @@ namespace MIDI {
                 MIDI::Range interval{MIDI::SIXTEENTH, MIDI::EIGHTH};
                 MIDI::Range decrease_interval{0, 0};
                 MIDI::Range minimum_interval{5, 10};
+                MIDI::Choice intervals;
             } repeat;
         };
         inline static void stutter(smf::MidiFile &file,

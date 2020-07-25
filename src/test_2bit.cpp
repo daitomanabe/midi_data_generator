@@ -11,6 +11,7 @@
 #include "Effect.h"
 #include "Randomize.h"
 #include "Quantize.h"
+
 #include "Sequencer.h"
 #include "Tidaloid.h"
 #include "MidiFileUtils.h"
